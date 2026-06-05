@@ -91,7 +91,7 @@ The project was built as a full-stack learning exercise that covers real-world w
 
 ## Project Structure
 
-```
+```text
 KeyVora/
 ├── app.py                      # Main application — routes, models, auth, encryption
 ├── requirements.txt            # Python dependencies
@@ -113,11 +113,13 @@ KeyVora/
 │   │   ├── 2fa.css             # 2FA page styles
 │   │   ├── main.css            # Global styles, design tokens
 │   │   └── profile_styles.css  # Profile / settings page styles
+│   │
 │   └── js/
 │       ├── 2fa.js              # 2FA page interactions
 │       ├── dashboard.js        # Vault UI — notebooks, search, entries
 │       ├── main.js             # Shared utilities, vault timer
-│       └── profile.js          # Profile page interactions
+│       ├── profile.js          # Profile page interactions
+│       └── terms.js            # Terms & Conditions page interactions
 │
 └── templates/
     ├── base.html               # Shared base layout (nav, session, headers)
@@ -127,10 +129,9 @@ KeyVora/
     ├── dashboard.html          # Main vault UI (notebooks + entries)
     ├── profile.html            # Account settings, 2FA management
     ├── 2fa.html                # TOTP verification step
-    └── forgot_password.html    # OTP-based password reset flow
+    ├── forgot_password.html    # OTP-based password reset flow
+    └── terms.html              # Terms & Conditions and Privacy Policy
 ```
-
----
 
 ## Security Architecture
 
