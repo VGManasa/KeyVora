@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms &amp; Conditions — KeyVora</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  --navy:#0a0f1e;
+  --navy-2:#111827;
+  --navy-3:#1a2236;
+  --blue:#1a4fcc;
+  --blue-2:#2060e8;
+  --blue-light:#e8effe;
+  --blue-mid:#c5d8ff;
+  --white:#ffffff;
+  --off-white:#f8f9fc;
+  --text-dark:#0a0f1e;
+  --text-med:#374151;
+  --text-soft:#6b7280;
+  --text-muted:#9ca3af;
+  --border:#e5e7eb;
+  --border-dark:#d1d5db;
+  --red:#dc2626;
+  --green:#16a34a;
+  --font:'Sora',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --max:780px;
+  --r:8px;
+  --r-sm:6px;
+  --shadow:0 8px 40px rgba(0,0,0,0.10);
+}
+
+body{
+  background:var(--off-white);
+  color:var(--text-dark);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.7;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(26,79,204,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(8,145,178,0.04) 0%, transparent 60%);
+}
+
+a{text-decoration:none;color:inherit;}
+
+/* ══ NAV ══ */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 2.5rem;height:64px;
+  display:flex;align-items:center;gap:1rem;
+}
+.logo{display:flex;align-items:center;gap:0.6rem;flex-shrink:0;}
+.logo-name{font-family:var(--font);font-size:1.05rem;font-weight:700;color:var(--navy);letter-spacing:-0.01em;}
+.nav-back{
+  margin-left:auto;
+  display:flex;align-items:center;gap:0.45rem;
+  font-family:var(--font);font-size:0.8rem;font-weight:600;
+  color:var(--text-soft);
+  border:1.5px solid var(--border-dark);
+  border-radius:var(--r-sm);
+  padding:0.4rem 0.9rem;
+  transition:border-color 0.15s,color 0.15s;
+  cursor:pointer;
+}
+.nav-back:hover{border-color:var(--navy);color:var(--navy);}
+.nav-back svg{width:13px;height:13px;}
+
+/* ══ HERO BANNER ══ */
+.terms-hero{
+  background:var(--navy);
+  padding:3.5rem 2rem 3rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.terms-hero::before{
+  content:'';
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 70% at 50% 50%, rgba(26,79,204,0.4) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(8,145,178,0.15) 0%, transparent 60%);
+}
+.terms-hero-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:50px 50px;
+}
+.terms-hero-inner{position:relative;z-index:1;}
+.terms-hero-badge{
+  display:inline-flex;align-items:center;gap:0.45rem;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:20px;
+  padding:0.35rem 0.9rem;
+  font-family:var(--font);font-size:0.7rem;font-weight:600;
+  color:rgba(255,255,255,0.6);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:1.25rem;
+}
+.terms-hero-badge svg{width:11px;height:11px;color:rgba(255,255,255,0.5);}
+.terms-hero h1{
+  font-family:var(--font);
+  font-size:clamp(1.8rem,4vw,2.6rem);
+  font-weight:800;
+  color:white;
+  letter-spacing:-0.025em;
+  line-height:1.1;
+  margin-bottom:0.85rem;
+}
+.terms-hero p{
+  font-size:0.9rem;
+  color:rgba(255,255,255,0.55);
+  max-width:460px;
+  margin:0 auto 1.5rem;
+  line-height:1.75;
+}
+.terms-meta{
+  display:flex;align-items:center;justify-content:center;gap:1.75rem;flex-wrap:wrap;
+}
+.terms-meta-item{
+  display:flex;align-items:center;gap:0.4rem;
+  font-size:0.75rem;font-weight:500;
+  color:rgba(255,255,255,0.4);
+  font-family:var(--font);
+}
+.terms-meta-item svg{width:12px;height:12px;color:rgba(255,255,255,0.35);}
+
+/* ══ LAYOUT ══ */
+.terms-layout{
+  max-width:1080px;
+  margin:0 auto;
+  padding:3rem 2rem 5rem;
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:3rem;
+  align-items:start;
+}
+
+/* ══ STICKY TOC ══ */
+.terms-toc{
+  position:sticky;
+  top:84px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:1.25rem;
+  box-shadow:var(--shadow);
+}
+.toc-title{
+  font-family:var(--font);
+  font-size:0.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--text-muted);
+  margin-bottom:0.85rem;
+  padding-bottom:0.65rem;
+  border-bottom:1px solid var(--border);
+}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:1px;}
+.toc-item a{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.4rem 0.6rem;
+  border-radius:var(--r-sm);
+  font-family:var(--font);font-size:0.76rem;font-weight:500;
+  color:var(--text-soft);
+  transition:background 0.15s,color 0.15s;
+  line-height:1.4;
+}
+.toc-item a:hover{background:var(--blue-light);color:var(--blue);}
+.toc-item a.active{background:var(--blue-light);color:var(--blue);font-weight:600;}
+.toc-num{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;color:var(--text-muted);
+  flex-shrink:0;min-width:16px;
+}
+.toc-item a.active .toc-num{color:var(--blue);}
+.toc-divider{height:1px;background:var(--border);margin:0.6rem 0;}
+.toc-cta{
+  margin-top:0.5rem;
+  background:var(--blue);
+  border:none;
+  border-radius:var(--r-sm);
+  color:white;
+  font-family:var(--font);font-size:0.75rem;font-weight:700;
+  padding:0.55rem 0.9rem;
+  cursor:pointer;
+  width:100%;
+  display:flex;align-items:center;justify-content:center;gap:0.4rem;
+  transition:background 0.15s;
+  letter-spacing:0.01em;
+  text-decoration:none;
+}
+.toc-cta:hover{background:var(--blue-2);}
+.toc-cta svg{width:12px;height:12px;}
+
+/* ══ CONTENT ══ */
+.terms-content{display:flex;flex-direction:column;gap:0;}
+
+.terms-preamble{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:1.75rem 2rem;
+  margin-bottom:1.5rem;
+  box-shadow:var(--shadow);
+}
+.preamble-notice{
+  display:flex;align-items:flex-start;gap:0.85rem;
+  background:var(--blue-light);
+  border:1px solid var(--blue-mid);
+  border-radius:var(--r-sm);
+  padding:1rem 1.1rem;
+  margin-bottom:1.25rem;
+}
+.pn-icon{
+  width:32px;height:32px;border-radius:7px;
+  background:rgba(26,79,204,0.1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.pn-icon svg{width:15px;height:15px;color:var(--blue);}
+.pn-title{font-family:var(--font);font-size:0.82rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem;}
+.pn-text{font-size:0.8rem;color:var(--text-med);line-height:1.65;}
+.preamble-text{font-size:0.875rem;color:var(--text-soft);line-height:1.8;}
+.preamble-text strong{color:var(--text-dark);font-weight:600;}
+
+/* ══ SECTION CARDS ══ */
+.terms-section{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:1rem;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,0.05);
+  transition:border-color 0.2s,box-shadow 0.2s;
+  scroll-margin-top:90px;
+}
+.terms-section:hover{border-color:var(--blue-mid);}
+
+.ts-header{
+  display:flex;align-items:center;gap:1rem;
+  padding:1.25rem 1.75rem;
+  cursor:pointer;
+  user-select:none;
+  border-bottom:1px solid transparent;
+  transition:background 0.15s,border-color 0.15s;
+}
+.ts-header:hover{background:var(--off-white);}
+.ts-header.open{border-bottom-color:var(--border);background:var(--off-white);}
+
+.ts-num{
+  width:30px;height:30px;border-radius:7px;
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:0.68rem;font-weight:700;
+  color:var(--blue);flex-shrink:0;
+  letter-spacing:0.03em;
+}
+.ts-title{
+  font-family:var(--font);font-size:0.92rem;font-weight:700;
+  color:var(--navy);flex:1;
+}
+.ts-chevron{
+  color:var(--text-muted);
+  transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),color 0.15s;
+  flex-shrink:0;
+}
+.ts-header.open .ts-chevron{transform:rotate(180deg);color:var(--blue);}
+
+.ts-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.ts-body.open{max-height:1200px;}
+.ts-body-inner{padding:1.5rem 1.75rem;}
+
+/* prose styles inside sections */
+.ts-body-inner p{
+  font-size:0.875rem;color:var(--text-soft);line-height:1.85;margin-bottom:0.9rem;
+}
+.ts-body-inner p:last-child{margin-bottom:0;}
+.ts-body-inner strong{color:var(--text-dark);font-weight:600;}
+.ts-body-inner ul{
+  margin:0.8rem 0 1rem 1.25rem;
+  padding-left:0.5rem;
+  list-style:disc;
+}
+.ts-body-inner ul li{
+  font-size:0.875rem;
+  color:var(--text-soft);
+  line-height:1.75;
+  margin-bottom:0.45rem;
+  padding-left:0;
+}
+.ts-body-inner ul li::marker{
+  color:var(--blue);
+}
+.ts-body-inner h4{
+  font-family:var(--font);font-size:0.82rem;font-weight:700;
+  color:var(--navy);margin:1.1rem 0 0.4rem;
+  text-transform:uppercase;letter-spacing:0.06em;
+}
+
+/* callout boxes inside sections */
+.ts-callout{
+  display:flex;align-items:flex-start;gap:0.75rem;
+  background:var(--off-white);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:0.9rem 1rem;
+  margin:0.75rem 0;
+}
+.ts-callout.warn{background:rgba(220,38,38,0.05);border-color:rgba(220,38,38,0.2);}
+.ts-callout.info{background:var(--blue-light);border-color:var(--blue-mid);}
+.ts-callout svg{width:14px;height:14px;flex-shrink:0;margin-top:0.15rem;}
+.ts-callout.warn svg{color:var(--red);}
+.ts-callout.info svg{color:var(--blue);}
+.ts-callout p{font-size:0.82rem !important;margin-bottom:0 !important;color:var(--text-med) !important;}
+
+/* ══ AGREEMENT FOOTER ══ */
+.terms-footer-card{
+  background:var(--navy);
+  border-radius:var(--r);
+  padding:2rem;
+  margin-top:1.5rem;
+  position:relative;overflow:hidden;
+}
+.terms-footer-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%, rgba(26,79,204,0.4) 0%, transparent 65%);
+}
+.terms-footer-inner{position:relative;z-index:1;}
+.tfc-title{
+  font-family:var(--font);font-size:1.1rem;font-weight:700;
+  color:white;margin-bottom:0.5rem;letter-spacing:-0.01em;
+}
+.tfc-sub{font-size:0.83rem;color:rgba(255,255,255,0.5);line-height:1.75;margin-bottom:1.5rem;}
+.tfc-actions{display:flex;gap:0.75rem;flex-wrap:wrap;}
+.btn-accept{
+  background:var(--blue-2);border:1.5px solid var(--blue-2);
+  border-radius:var(--r-sm);color:white;
+  font-family:var(--font);font-size:0.85rem;font-weight:700;
+  padding:0.65rem 1.5rem;
+  cursor:pointer;display:inline-flex;align-items:center;gap:0.45rem;
+  transition:background 0.15s,transform 0.1s;
+  letter-spacing:0.01em;
+  text-decoration:none;
+}
+.btn-accept:hover{background:#1a56d6;transform:translateY(-1px);}
+.btn-accept svg{width:13px;height:13px;}
+.btn-decline{
+  background:rgba(255,255,255,0.07);
+  border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:var(--r-sm);color:rgba(255,255,255,0.7);
+  font-family:var(--font);font-size:0.85rem;font-weight:600;
+  padding:0.65rem 1.25rem;
+  cursor:pointer;
+  transition:background 0.15s,border-color 0.15s;
+  text-decoration:none;
+  display:inline-block;
+}
+.btn-decline:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.35);}
+.tfc-note{font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:1rem;letter-spacing:0.01em;}
+
+/* ══ PROGRESS BAR ══ */
+.read-progress{
+  position:fixed;top:0;left:0;z-index:9999;
+  height:2.5px;background:var(--blue-2);
+  width:0%;transition:width 0.1s linear;
+  box-shadow:0 0 8px rgba(32,96,232,0.5);
+}
+
+/* ══ BACK TO TOP ══ */
+.back-top{
+  position:fixed;bottom:1.75rem;right:1.75rem;z-index:500;
+  width:38px;height:38px;border-radius:50%;
+  background:var(--navy);border:1.5px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.7);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.25s,transform 0.2s;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.back-top.visible{opacity:1;pointer-events:auto;}
+.back-top:hover{transform:translateY(-2px);color:white;}
+.back-top svg{width:14px;height:14px;}
+
+/* ══ FOOTER ══ */
+.page-footer{
+  background:var(--navy-2, #111827);
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:1.5rem 2.5rem;
+}
+.foot-wrap{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+}
+.foot-logo{display:flex;align-items:center;gap:0.55rem;}
+.foot-logo-name{font-family:var(--font);font-size:0.95rem;font-weight:700;color:white;}
+.foot-links{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.foot-links a{font-size:0.78rem;color:rgba(255,255,255,0.35);transition:color 0.15s;}
+.foot-links a:hover{color:rgba(255,255,255,0.7);}
+.foot-copy{font-size:0.75rem;color:rgba(255,255,255,0.22);}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:860px){
+  .terms-layout{grid-template-columns:1fr;gap:1.5rem;}
+  .terms-toc{position:static;}
+  .nav-inner{padding:0 1.25rem;}
+}
+@media(max-width:560px){
+  .terms-layout{padding:1.5rem 1rem 3rem;}
+  .terms-hero{padding:2.5rem 1.25rem 2rem;}
+  .ts-body-inner{padding:1.25rem;}
+  .ts-header{padding:1rem 1.25rem;}
+  .tfc-actions{flex-direction:column;}
+  .btn-accept,.btn-decline{text-align:center;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- Read progress bar -->
+<div class="read-progress" id="readProgress"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <svg width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="9" fill="#0a0f1e"/>
+        <path d="M18 7L9 11v7.5c0 5.25 3.8 10.15 9 11.5 5.2-1.35 9-6.25 9-11.5V11L18 7z" fill="#2060e8"/>
+        <circle cx="18" cy="17" r="3.2" fill="white"/>
+        <rect x="16.35" y="19.2" width="3.3" height="4.8" rx="0.8" fill="white"/>
+      </svg>
+      <span class="logo-name">KeyVora</span>
+    </a>
+    <a href="/register" class="nav-back" id="nav-back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Register
+    </a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="terms-hero">
+  <div class="terms-hero-grid"></div>
+  <div class="terms-hero-inner">
+    <div class="terms-hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Legal
+    </div>
+    <h1>Terms &amp; Conditions</h1>
+    <p>Please read these terms carefully before creating your KeyVora vault. They explain how the service works, what we expect from you, and what you can expect from us.</p>
+    <div class="terms-meta">
+      <div class="terms-meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Last updated: June 2026
+      </div>
+      <div class="terms-meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        12 sections
+      </div>
+      <div class="terms-meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Effective immediately upon registration
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN LAYOUT ══ -->
+<div class="terms-layout">
+
+  <!-- Sticky TOC -->
+  <aside class="terms-toc" id="termsToc">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list" id="tocList">
+      <li class="toc-item"><a href="#s1" data-section="s1"><span class="toc-num">01</span>Acceptance of Terms</a></li>
+      <li class="toc-item"><a href="#s2" data-section="s2"><span class="toc-num">02</span>Service Description</a></li>
+      <li class="toc-item"><a href="#s3" data-section="s3"><span class="toc-num">03</span>Account &amp; Registration</a></li>
+      <li class="toc-item"><a href="#s4" data-section="s4"><span class="toc-num">04</span>Master Password &amp; Security</a></li>
+      <li class="toc-item"><a href="#s5" data-section="s5"><span class="toc-num">05</span>Acceptable Use</a></li>
+      <li class="toc-item"><a href="#s6" data-section="s6"><span class="toc-num">06</span>Data &amp; Privacy</a></li>
+      <li class="toc-item"><a href="#s7" data-section="s7"><span class="toc-num">07</span>Security Practices</a></li>
+      <li class="toc-item"><a href="#s8" data-section="s8"><span class="toc-num">08</span>Intellectual Property</a></li>
+      <li class="toc-item"><a href="#s9" data-section="s9"><span class="toc-num">09</span>Limitation of Liability</a></li>
+      <li class="toc-item"><a href="#s10" data-section="s10"><span class="toc-num">10</span>Termination</a></li>
+      <li class="toc-item"><a href="#s11" data-section="s11"><span class="toc-num">11</span>Changes to Terms</a></li>
+      <li class="toc-item"><a href="#s12" data-section="s12"><span class="toc-num">12</span>Contact</a></li>
+    </ul>
+    <div class="toc-divider"></div>
+    <a href="/register?accepted=1" class="toc-cta" id="toc-cta-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Accept &amp; Register
+    </a>
+  </aside>
+
+  <!-- Content -->
+  <main class="terms-content">
+
+    <!-- Preamble -->
+    <div class="terms-preamble">
+      <div class="preamble-notice">
+        <div class="pn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="pn-title">Read before you register</div>
+          <div class="pn-text">By creating a KeyVora account you confirm that you have read, understood, and agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not register or use the service.</div>
+        </div>
+      </div>
+      <p class="preamble-text">
+        These Terms &amp; Conditions govern your use of <strong>KeyVora</strong>, a secure password management service. KeyVora is a password management service designed to help users securely store and manage credentials.
+      </p>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="terms-section" id="s1">
+      <div class="ts-header open" data-target="body-s1">
+        <div class="ts-num">01</div>
+        <div class="ts-title">Acceptance of Terms</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body open" id="body-s1">
+        <div class="ts-body-inner">
+          <p>By accessing or using KeyVora — whether through the web application, API, or any associated interface — you confirm that you are at least <strong>13 years of age</strong> (or the minimum age of digital consent in your jurisdiction), and that you have the legal capacity to enter into a binding agreement.</p>
+          <p>If you are using KeyVora on behalf of an organisation or entity, you represent that you have authority to bind that entity to these terms, and all references to "you" include that entity.</p>
+          <div class="ts-callout info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p>Continued use of KeyVora after any changes to these terms constitutes your acceptance of the revised terms.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="terms-section" id="s2">
+      <div class="ts-header" data-target="body-s2">
+        <div class="ts-num">02</div>
+        <div class="ts-title">Service Description</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s2">
+        <div class="ts-body-inner">
+          <p>KeyVora is a server-assisted encrypted password manager. The service allows you to:</p>
+          <ul>
+            <li>Store credentials (titles, usernames, passwords, URLs, notes) in encrypted notebooks</li>
+            <li>Organise entries into named, colour-coded notebooks</li>
+            <li>Access credentials from any browser after authenticating with your master password</li>
+            <li>Enable TOTP two-factor authentication for additional login security</li>
+            <li>Export your vault data as a JSON file at any time</li>
+          </ul>
+          <p>KeyVora is provided <strong>free of charge</strong> with no trial periods, feature limits, or subscription tiers. The service is offered on an <strong>"as-is" and "as-available"</strong> basis.</p>
+          <div class="ts-callout warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p>KeyVora uses a <strong>server-assisted encryption model</strong>, not a fully client-side zero-knowledge architecture. Your vault key is held in the server session while the vault is unlocked and wiped automatically after 15 minutes of inactivity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="terms-section" id="s3">
+      <div class="ts-header" data-target="body-s3">
+        <div class="ts-num">03</div>
+        <div class="ts-title">Account &amp; Registration</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s3">
+        <div class="ts-body-inner">
+          <p>To use KeyVora you must register an account with a valid email address, a unique username, and a master password. Alternatively, you may register via Google OAuth.</p>
+          <h4>Your responsibilities</h4>
+          <ul>
+            <li>Provide accurate and complete registration information</li>
+            <li>Maintain the confidentiality of your login credentials and master password</li>
+            <li>Notify us immediately of any unauthorised access to your account</li>
+            <li>Not share your account credentials with any third party</li>
+            <li>Not create more than one account per person for the purpose of circumventing any restrictions</li>
+          </ul>
+          <p>You are solely responsible for all activity that occurs under your account, whether or not authorised by you.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="terms-section" id="s4">
+      <div class="ts-header" data-target="body-s4">
+        <div class="ts-num">04</div>
+        <div class="ts-title">Master Password &amp; Security</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s4">
+        <div class="ts-body-inner">
+          <p>Your <strong>master password</strong> is the key that protects your vault. It is used to derive a Key Encryption Key (KEK) via PBKDF2-HMAC-SHA256 with 390,000 iterations. The master password is <strong>never stored</strong> on our servers in any form.</p>
+          <div class="ts-callout warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p><strong>If you forget your master password, we cannot view or recover it. Recovery of access depends on the account recovery mechanisms available at the time and may require verification through your registered email address.</strong> Always store your master password securely outside of KeyVora.</p>
+          </div>
+          <p>A password reset flow is available, but it re-wraps your existing vault key under the new master password — this only works if you can authenticate via your registered email address.</p>
+          <p>We strongly recommend enabling TOTP two-factor authentication after registration. Backup codes are generated at enrolment and should be stored securely offline; they are single-use and cannot be regenerated.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="terms-section" id="s5">
+      <div class="ts-header" data-target="body-s5">
+        <div class="ts-num">05</div>
+        <div class="ts-title">Acceptable Use</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s5">
+        <div class="ts-body-inner">
+          <p>You agree to use KeyVora only for lawful purposes and in a manner consistent with these terms. You must not:</p>
+          <ul>
+            <li>Attempt to bypass, disable, or circumvent any security or rate-limiting mechanisms</li>
+            <li>Use automated scripts to make excessive API requests or to probe for vulnerabilities without prior written consent</li>
+            <li>Store content that is illegal, harmful, or violates the rights of any third party</li>
+            <li>Use the service to store credentials that facilitate unauthorised access to third-party systems</li>
+            <li>Attempt to access other users' accounts or vault data</li>
+            <li>Distribute, sell, sublicense, or resell the service or any component of it</li>
+            <li>Reverse-engineer or decompile the service beyond what is permitted by open-source licence terms</li>
+          </ul>
+          <p>Violation of acceptable use policies may result in immediate account suspension or termination without notice.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="terms-section" id="s6">
+      <div class="ts-header" data-target="body-s6">
+        <div class="ts-num">06</div>
+        <div class="ts-title">Data &amp; Privacy</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s6">
+        <div class="ts-body-inner">
+          <p>We collect only the data necessary to provide the service: your username, email address, bcrypt-hashed login password, encrypted vault key (wrapped by your KEK), and Fernet-encrypted credential entries.</p>
+          <h4>What we store</h4>
+          <ul>
+            <li><strong>Email address</strong> — used for authentication, password reset OTPs, and service notifications</li>
+            <li><strong>Username</strong> — used for display purposes within the application</li>
+            <li><strong>Bcrypt-hashed login password</strong> — stored as a one-way hash; never reversible</li>
+            <li><strong>Encrypted vault key</strong> — wrapped by your KEK; useless without your master password</li>
+            <li><strong>Encrypted credential entries</strong> — stored as Fernet ciphertext; readable only with the vault key</li>
+            <li><strong>TOTP secret and bcrypt-hashed backup codes</strong> — only if 2FA is enabled</li>
+          </ul>
+          <p>We do not sell, trade, or share your data with any third party for marketing or commercial purposes. Your encrypted data may be used in aggregated, anonymised form to monitor service health.</p>
+          <p>You may export your complete vault at any time via the dashboard and request account deletion, which permanently removes all your data from our systems.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="terms-section" id="s7">
+      <div class="ts-header" data-target="body-s7">
+        <div class="ts-num">07</div>
+        <div class="ts-title">Security Practices</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s7">
+        <div class="ts-body-inner">
+          <p>KeyVora implements the following security measures on your behalf:</p>
+          <ul>
+            <li>Fernet (AES-128-CBC + HMAC-SHA256) encryption for all stored credentials</li>
+            <li>PBKDF2-HMAC-SHA256 with 390,000 iterations for master password key derivation</li>
+            <li>Bcrypt hashing for login passwords and 2FA backup codes</li>
+            <li>Rate-limited endpoints to prevent brute-force attacks</li>
+            <li>Auto-lock vault after 15 minutes of inactivity, wiping the vault key from session memory</li>
+            <li>Security response headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy) on all responses</li>
+            <li>HttpOnly, SameSite=Lax, and Secure session cookies in production</li>
+          </ul>
+          <p>While we implement industry-standard security controls, <strong> we cannot guarantee absolute security.</strong> You accept responsibility for your own security hygiene: use a strong, unique master password, enable 2FA, and do not share your credentials.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="terms-section" id="s8">
+      <div class="ts-header" data-target="body-s8">
+        <div class="ts-num">08</div>
+        <div class="ts-title">Intellectual Property</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s8">
+        <div class="ts-body-inner">
+          <p>The KeyVora name, branding, and original design elements remain the property of the project maintainers. Source code is provided under the applicable open-source licence.</p>
+          <p>You retain full ownership of all credential data you store within your vault. Storing data in KeyVora does not grant us any rights to that data beyond what is strictly necessary to operate the service.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="terms-section" id="s9">
+      <div class="ts-header" data-target="body-s9">
+        <div class="ts-num">09</div>
+        <div class="ts-title">Limitation of Liability</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s9">
+        <div class="ts-body-inner">
+          <p>KeyVora is provided <strong>free of charge and without warranty</strong>. To the maximum extent permitted by applicable law, we disclaim all warranties, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+          <div class="ts-callout warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p>We shall not be liable for any loss or damage to the fullest extent permitted by applicable law — including data loss, security breaches, or financial harm — arising from your use of or inability to use the service, even if we have been advised of the possibility of such damages.</p>
+          </div>
+          <p>You use KeyVora entirely at your own risk. We strongly recommend maintaining your own secure offline backups of critical credentials, independent of any password manager.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="terms-section" id="s10">
+      <div class="ts-header" data-target="body-s10">
+        <div class="ts-num">10</div>
+        <div class="ts-title">Termination</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s10">
+        <div class="ts-body-inner">
+          <p>You may delete your account at any time from the account settings page. Upon deletion, all your data — including vault entries, notebooks, and associated keys — is removed from active systems and is no longer accessible through the service. Residual copies may remain in backup systems for a limited period before permanent deletion.</p>
+          <p>We reserve the right to suspend or terminate your account at any time and without notice if we reasonably believe you have violated these terms, engaged in illegal activity, or caused harm to the service or other users.</p>
+          <p>On termination, your right to use the service ceases immediately. Sections 8, 9, and 11 of these terms survive termination.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 11 -->
+    <div class="terms-section" id="s11">
+      <div class="ts-header" data-target="body-s11">
+        <div class="ts-num">11</div>
+        <div class="ts-title">Changes to Terms</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s11">
+        <div class="ts-body-inner">
+          <p>We may revise these Terms &amp; Conditions from time to time. When we do, we will update the "Last updated" date at the top of this page and, where the changes are material, notify registered users by email.</p>
+          <p>Your continued use of KeyVora after any update constitutes your acceptance of the revised terms. If you do not agree to the revised terms, you should export your data and delete your account before the effective date of the changes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 12 -->
+    <div class="terms-section" id="s12">
+      <div class="ts-header" data-target="body-s12">
+        <div class="ts-num">12</div>
+        <div class="ts-title">Contact</div>
+        <svg class="ts-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ts-body" id="body-s12">
+        <div class="ts-body-inner">
+          <p>If you have any questions about these Terms &amp; Conditions, or if you wish to report a security vulnerability or a concern regarding your account, please contact us:</p>
+          <ul>
+            <li><strong>Project:</strong> KeyVora — Secure Password Manager</li>
+            <li><strong>Maintainer: </strong> KeyVora Project Team </li>
+            <li><strong>Email:</strong> keyvora.security@gmail.com</li>
+            <li><strong>GitHub:</strong> Open an issue on the KeyVora repository</li>
+          </ul>
+          <p>For security disclosures, please follow responsible disclosure practices — report vulnerabilities privately before making them public, allowing reasonable time for a fix to be deployed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agreement footer -->
+    <div class="terms-footer-card">
+      <div class="terms-footer-inner">
+        <div class="tfc-title">Ready to create your vault?</div>
+        <div class="tfc-sub">By clicking "Accept &amp; Register" you confirm that you have read and agree to these Terms &amp; Conditions and understand the server-assisted encryption model used by KeyVora.</div>
+        <div class="tfc-actions">
+          <a href="/register?accepted=1" class="btn-accept" id="btnAccept">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Accept &amp; Register
+          </a>
+          <a href="/" class="btn-decline">Decline — Go Home</a>
+        </div>
+        <div class="tfc-note">Free forever · No credit card · Export anytime · Open-source</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Back to top -->
+<button class="back-top" id="backTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- ══ FOOTER ══ -->
+<footer class="page-footer">
+  <div class="foot-wrap">
+    <a href="/" class="foot-logo">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="9" fill="#0a0f1e"/>
+        <path d="M18 7L9 11v7.5c0 5.25 3.8 10.15 9 11.5 5.2-1.35 9-6.25 9-11.5V11L18 7z" fill="#2060e8"/>
+        <circle cx="18" cy="17" r="3.2" fill="white"/>
+        <rect x="16.35" y="19.2" width="3.3" height="4.8" rx="0.8" fill="white"/>
+      </svg>
+      <span class="foot-logo-name">KeyVora</span>
+    </a>
+    <div class="foot-links">
+      <a href="/">Home</a>
+      <a href="/login">Sign In</a>
+      <a href="/register">Register</a>
+      <a href="/terms" style="color:rgba(255,255,255,0.6);">Terms</a>
+    </div>
+    <div class="foot-copy">KeyVora &copy; 2026 &nbsp;·&nbsp; Built by Manasa</div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/terms.js') }}"></script>
+</body>
+</html>
