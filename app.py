@@ -722,6 +722,9 @@ def two_fa_page():
         return redirect(url_for('login_page'))
     return render_template('2fa.html')
 
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
 
 @app.route('/dashboard')
 @multi_account_required

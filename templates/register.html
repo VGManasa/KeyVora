@@ -75,6 +75,30 @@
         </div>
       </div>
 
+      <!-- ── Terms & Conditions checkbox ── -->
+      <div class="field-group terms-field-group">
+        <label class="terms-checkbox-label" id="terms-checkbox-label">
+          <span class="terms-checkbox-box" id="terms-checkbox-box" role="checkbox" aria-checked="false" tabindex="0">
+            <svg class="terms-check-icon" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="1.5,5 4.5,8 10.5,1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <input type="checkbox" id="terms-agree" style="position:absolute;opacity:0;width:0;height:0;" tabindex="-1"/>
+          <span class="terms-checkbox-text">
+            I have read and agree to the
+            <a href="/terms" class="terms-link" id="terms-link">Terms &amp; Conditions</a>
+          </span>
+        </label>
+        <div class="terms-checkbox-error d-none" id="terms-error">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Please agree to the Terms &amp; Conditions to continue
+        </div>
+      </div>
+
       <button type="submit" class="btn-primary-full" id="register-btn">
         <span class="btn-text">Create Account</span>
         <span class="btn-loader d-none"></span>
@@ -86,8 +110,183 @@
 
 </div>
 
+<style>
+/* ── Terms checkbox ── */
+.terms-field-group {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.terms-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.terms-checkbox-box {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.75px solid var(--border-dark, #d1d5db);
+  background: var(--white, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+
+.terms-checkbox-box:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 79, 204, 0.18);
+}
+
+.terms-checkbox-box.checked {
+  background: var(--blue, #1a4fcc);
+  border-color: var(--blue, #1a4fcc);
+}
+
+.terms-checkbox-box.error-state {
+  border-color: #dc2626;
+}
+
+.terms-check-icon {
+  width: 12px;
+  height: 10px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.terms-checkbox-box.checked .terms-check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.terms-checkbox-text {
+  font-size: 0.825rem;
+  color: var(--text-soft, #6b7280);
+  line-height: 1.55;
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+.terms-link {
+  color: var(--blue, #1a4fcc);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(26, 79, 204, 0.25);
+  transition: color 0.15s, border-color 0.15s;
+}
+.terms-link:hover {
+  color: var(--blue-2, #2060e8);
+  border-color: rgba(32, 96, 232, 0.5);
+}
+
+.terms-checkbox-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+  font-size: 0.775rem;
+  color: #dc2626;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-weight: 500;
+  margin-left: 0.1rem;
+}
+</style>
+
 <script>
-// ── Password strength meter
+// ── Checkbox custom control ─────────────────────────────────
+const checkBox    = document.getElementById('terms-checkbox-box');
+const checkInput  = document.getElementById('terms-agree');
+const termsError  = document.getElementById('terms-error');
+const termsLabel  = document.getElementById('terms-checkbox-label');
+const termsLink   = document.getElementById('terms-link');
+
+function setChecked(val) {
+  checkInput.checked = val;
+  checkBox.setAttribute('aria-checked', val ? 'true' : 'false');
+  if (val) {
+    checkBox.classList.add('checked');
+    checkBox.classList.remove('error-state');
+    termsError.classList.add('d-none');
+  } else {
+    checkBox.classList.remove('checked');
+  }
+}
+
+// Click on the box or label text toggles state
+termsLabel.addEventListener('click', function(e) {
+  // Don't toggle when clicking the actual link
+  if (e.target === termsLink || termsLink.contains(e.target)) return;
+  setChecked(!checkInput.checked);
+});
+
+// Keyboard support
+checkBox.addEventListener('keydown', function(e) {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    setChecked(!checkInput.checked);
+  }
+});
+
+// Save form state to sessionStorage so it survives the round-trip to /terms
+function saveFormState() {
+  try {
+    sessionStorage.setItem('kv_reg_username', document.getElementById('username').value);
+    sessionStorage.setItem('kv_reg_email',    document.getElementById('email').value);
+    // Never persist passwords — just mark that fields had content
+    const hasPw = document.getElementById('password').value.length > 0;
+    sessionStorage.setItem('kv_reg_had_pw', hasPw ? '1' : '');
+  } catch (_) {}
+}
+
+// When user clicks "Terms & Conditions" link, save form + flag where they came from
+termsLink.addEventListener('click', function(e) {
+  // Don't prevent default — let them navigate to /terms
+  saveFormState();
+  try { sessionStorage.setItem('kv_terms_from_register', '1'); } catch (_) {}
+});
+
+// ── Auto-restore agreed state on return from /terms ───────
+(function restoreFromTerms() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromTerms = urlParams.get('accepted') === '1';
+  let   ssAgreed  = false;
+  try { ssAgreed = sessionStorage.getItem('keyvora_terms_agreed') === '1'; } catch (_) {}
+
+  if (fromTerms || ssAgreed) {
+    setChecked(true);
+    try { sessionStorage.removeItem('keyvora_terms_agreed'); } catch (_) {}
+    // Restore username / email if they were saved
+    try {
+      const u = sessionStorage.getItem('kv_reg_username');
+      const em = sessionStorage.getItem('kv_reg_email');
+      if (u)  document.getElementById('username').value = u;
+      if (em) document.getElementById('email').value    = em;
+      sessionStorage.removeItem('kv_reg_username');
+      sessionStorage.removeItem('kv_reg_email');
+      sessionStorage.removeItem('kv_reg_had_pw');
+      sessionStorage.removeItem('kv_terms_from_register');
+    } catch (_) {}
+  }
+})();
+
+// ── Clean up URL without reload (remove ?accepted=1) ──────
+(function cleanUrl() {
+  if (window.location.search.includes('accepted=1')) {
+    const clean = window.location.pathname;
+    window.history.replaceState(null, '', clean);
+  }
+})();
+
+// ── Password strength meter ─────────────────────────────────
 const pwInput = document.getElementById('password');
 pwInput.addEventListener('input', function () {
   const val   = this.value;
@@ -106,7 +305,7 @@ pwInput.addEventListener('input', function () {
   label.style.color     = colors[score];
 });
 
-// ── Generate strong password
+// ── Generate strong password ────────────────────────────────
 document.getElementById('btn-generate-register').addEventListener('click', function () {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
   const array = new Uint32Array(16);
@@ -124,7 +323,7 @@ document.getElementById('btn-generate-register').addEventListener('click', funct
   pwField.dispatchEvent(new Event('input'));
 });
 
-// ── Register submit
+// ── Register submit ─────────────────────────────────────────
 document.getElementById('register-form').addEventListener('submit', async function (e) {
   e.preventDefault();
   const btn     = document.getElementById('register-btn');
@@ -132,6 +331,14 @@ document.getElementById('register-form').addEventListener('submit', async functi
   const success = document.getElementById('auth-success');
   const pw      = document.getElementById('password').value;
   const conf    = document.getElementById('confirm').value;
+
+  // Validate terms agreement
+  if (!checkInput.checked) {
+    checkBox.classList.add('error-state');
+    termsError.classList.remove('d-none');
+    checkBox.focus();
+    return;
+  }
 
   if (pw !== conf) {
     alert.textContent = 'Passwords do not match';
