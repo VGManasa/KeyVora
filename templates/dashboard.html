@@ -1,219 +1,789 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — VaultKey{% endblock %}
+{% block title %}Dashboard — KeyVora{% endblock %}
 {% block content %}
 
-<div class="app-shell">
+<script>
+  (function(){
+    const saved = localStorage.getItem('kv_theme');
+    if (saved === 'light') document.documentElement.setAttribute('data-theme','light');
+    else document.documentElement.setAttribute('data-theme','dark');
+  })();
+</script>
 
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="brand-lockup">
-        <div class="brand-icon sm">
-          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="#c8f060"/>
-            <path d="M18 8C14.13 8 11 11.13 11 15c0 2.97 1.8 5.52 4.4 6.65V26h5.2v-4.35C23.2 20.52 25 17.97 25 15c0-3.87-3.13-7-7-7z" fill="#0a0a0a"/>
-            <circle cx="18" cy="15" r="2.5" fill="#c8f060"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root,
+[data-theme="dark"] {
+  --kv-bg:            #0a0f1e;
+  --kv-bg2:           #111827;
+  --kv-bg3:           #1a2236;
+  --kv-bg4:           #1e2d4a;
+  --kv-surface:       #111827;
+  --kv-surface2:      #1a2236;
+  --kv-border:        rgba(255,255,255,0.07);
+  --kv-border2:       rgba(255,255,255,0.12);
+  --kv-text:          #e2e8f0;
+  --kv-text2:         #94a3b8;
+  --kv-text3:         #475569;
+  --kv-text4:         #334155;
+  --kv-blue:          #2060e8;
+  --kv-blue2:         #3b82f6;
+  --kv-blue-dim:      rgba(32,96,232,0.15);
+  --kv-blue-border:   rgba(32,96,232,0.3);
+  --kv-accent:        #6fa8f7;
+  --kv-red:           #f87171;
+  --kv-red-dim:       rgba(248,113,113,0.1);
+  --kv-red-border:    rgba(248,113,113,0.25);
+  --kv-green:         #4ade80;
+  --kv-green-dim:     rgba(74,222,128,0.1);
+  --kv-amber:         #fbbf24;
+  --kv-amber-dim:     rgba(251,191,36,0.1);
+  --kv-amber-border:  rgba(251,191,36,0.25);
+  --kv-shadow:        0 20px 60px rgba(0,0,0,0.5);
+  --kv-shadow-sm:     0 4px 20px rgba(0,0,0,0.3);
+  --kv-r:             8px;
+  --kv-r-sm:          6px;
+  --kv-r-lg:          12px;
+  --kv-sidebar-w:     268px;
+  --kv-topbar-h:      62px;
+  --kv-font:          'Sora', sans-serif;
+  --kv-body:          'Inter', sans-serif;
+  --kv-mono:          'DM Mono', monospace;
+  --kv-nb-glow:       rgba(32,96,232,0.08);
+  --kv-nav-active-bg:   rgba(32,96,232,0.18);
+  --kv-nav-active-text: #6fa8f7;
+  --kv-nav-hover-bg:    rgba(255,255,255,0.05);
+}
+
+[data-theme="light"] {
+  --kv-bg:            #f1f5f9;
+  --kv-bg2:           #ffffff;
+  --kv-bg3:           #f8fafc;
+  --kv-bg4:           #e2e8f0;
+  --kv-surface:       #ffffff;
+  --kv-surface2:      #f8fafc;
+  --kv-border:        rgba(0,0,0,0.07);
+  --kv-border2:       rgba(0,0,0,0.12);
+  --kv-text:          #0a0f1e;
+  --kv-text2:         #374151;
+  --kv-text3:         #6b7280;
+  --kv-text4:         #9ca3af;
+  --kv-blue:          #1a4fcc;
+  --kv-blue2:         #2060e8;
+  --kv-blue-dim:      rgba(26,79,204,0.08);
+  --kv-blue-border:   rgba(26,79,204,0.2);
+  --kv-accent:        #1a4fcc;
+  --kv-red:           #dc2626;
+  --kv-red-dim:       rgba(220,38,38,0.07);
+  --kv-red-border:    rgba(220,38,38,0.2);
+  --kv-green:         #16a34a;
+  --kv-green-dim:     rgba(22,163,74,0.08);
+  --kv-amber:         #d97706;
+  --kv-amber-dim:     rgba(217,119,6,0.08);
+  --kv-amber-border:  rgba(217,119,6,0.25);
+  --kv-shadow:        0 20px 60px rgba(0,0,0,0.12);
+  --kv-shadow-sm:     0 4px 20px rgba(0,0,0,0.06);
+  --kv-nb-glow:       rgba(26,79,204,0.04);
+  --kv-nav-active-bg:   rgba(26,79,204,0.1);
+  --kv-nav-active-text: #1a4fcc;
+  --kv-nav-hover-bg:    rgba(0,0,0,0.04);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  height:100%;font-family:var(--kv-body);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;background:var(--kv-bg);color:var(--kv-text);
+  transition:background 0.3s,color 0.3s;
+}
+button,input,textarea,select{
+  font-family:inherit;
+  transition:background 0.2s,border-color 0.2s,color 0.2s,box-shadow 0.2s,opacity 0.2s;
+}
+a{text-decoration:none;color:inherit;}
+.kv-shell{display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.kv-sidebar{
+  width:var(--kv-sidebar-w);background:var(--kv-bg);border-right:1px solid var(--kv-border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),background 0.3s;
+}
+.kv-brand{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.25rem;border-bottom:1px solid var(--kv-border);flex-shrink:0;
+}
+.kv-brand-lockup{display:flex;align-items:center;gap:0.6rem;}
+.kv-brand-icon{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  overflow:hidden;
+}
+.kv-brand-name{font-family:var(--kv-font);font-size:1.05rem;font-weight:700;color:var(--kv-text);letter-spacing:-0.01em;}
+.kv-sidebar-close{
+  display:none;background:none;border:none;color:var(--kv-text3);cursor:pointer;
+  padding:4px;border-radius:6px;line-height:0;transition:color 0.2s,background 0.2s;
+}
+.kv-sidebar-close:hover{color:var(--kv-text);background:var(--kv-nav-hover-bg);}
+.kv-sidebar-search{padding:0.85rem 1.1rem;border-bottom:1px solid var(--kv-border);flex-shrink:0;}
+.kv-search-wrap{position:relative;display:flex;align-items:center;}
+.kv-search-ico{position:absolute;left:0.7rem;color:var(--kv-text3);pointer-events:none;flex-shrink:0;}
+.kv-search-input{
+  width:100%;background:var(--kv-surface2);border:1px solid var(--kv-border2);
+  border-radius:var(--kv-r-sm);color:var(--kv-text);font-size:0.845rem;
+  padding:0.48rem 0.75rem 0.48rem 2.2rem;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.kv-search-input:focus{border-color:var(--kv-blue);box-shadow:0 0 0 3px var(--kv-blue-dim);}
+.kv-search-input::placeholder{color:var(--kv-text3);}
+.kv-sec-label{
+  padding:0.7rem 1.2rem 0.3rem;font-family:var(--kv-font);
+  font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.13em;
+  color:var(--kv-text3);flex-shrink:0;
+}
+.kv-nav{flex:1;overflow-y:auto;overflow-x:visible;padding:0.25rem 0.65rem;}
+.kv-nav::-webkit-scrollbar{width:3px;}
+.kv-nav::-webkit-scrollbar-track{background:transparent;}
+.kv-nav::-webkit-scrollbar-thumb{background:var(--kv-border2);border-radius:3px;}
+.kv-nav-item{
+  display:flex;align-items:center;gap:0.55rem;padding:0.48rem 0.7rem;
+  border-radius:var(--kv-r-sm);cursor:pointer;font-size:0.83rem;color:var(--kv-text2);
+  transition:background 0.15s,color 0.15s;position:relative;margin-bottom:1px;
+  min-width:0;user-select:none;
+}
+.kv-nav-item:hover{background:var(--kv-nav-hover-bg);color:var(--kv-text);}
+.kv-nav-item.active{background:var(--kv-nav-active-bg);color:var(--kv-nav-active-text);font-weight:600;}
+.kv-nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.kv-nav-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.kv-nav-placeholder{color:var(--kv-text3);font-size:0.8rem;padding:0.5rem 0.7rem;}
+.kv-btn-new-nb{
+  margin:0.7rem 0.9rem;background:none;border:1px dashed var(--kv-border2);
+  border-radius:var(--kv-r-sm);color:var(--kv-text3);font-family:var(--kv-font);
+  font-size:0.78rem;font-weight:600;padding:0.5rem 0.85rem;cursor:pointer;
+  display:flex;align-items:center;gap:0.45rem;
+  transition:border-color 0.2s,color 0.2s,background 0.2s;flex-shrink:0;
+}
+.kv-btn-new-nb:hover{border-color:var(--kv-blue-border);color:var(--kv-accent);background:var(--kv-blue-dim);}
+.kv-sidebar-footer{
+  border-top:1px solid var(--kv-border);padding:0.85rem 1.1rem;
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.kv-user-chip{display:flex;align-items:center;gap:0.6rem;flex:1;min-width:0;}
+.kv-user-avatar{
+  width:31px;height:31px;border-radius:50%;background:var(--kv-blue);color:#fff;
+  font-weight:700;font-family:var(--kv-font);font-size:0.78rem;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.kv-user-info{display:flex;flex-direction:column;min-width:0;}
+.kv-user-name{
+  font-family:var(--kv-font);font-size:0.8rem;font-weight:600;color:var(--kv-text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.kv-user-role{font-size:0.67rem;color:var(--kv-text3);}
+.kv-btn-logout{
+  background:none;border:none;color:var(--kv-text3);cursor:pointer;padding:5px;
+  border-radius:6px;line-height:0;transition:color 0.2s,background 0.2s;flex-shrink:0;
+}
+.kv-btn-logout:hover{color:var(--kv-red);background:var(--kv-red-dim);}
+
+/* ── TOPBAR ──────────────────────────────────────────────── */
+.kv-topbar{
+  height:var(--kv-topbar-h);background:var(--kv-surface);border-bottom:1px solid var(--kv-border);
+  display:flex;align-items:center;gap:0.85rem;padding:0 1.75rem;
+  position:sticky;top:0;z-index:50;transition:background 0.3s,border-color 0.3s;
+}
+.kv-topbar-menu{
+  display:none;background:none;border:none;color:var(--kv-text2);cursor:pointer;
+  padding:4px;border-radius:6px;line-height:0;transition:color 0.2s;
+}
+.kv-topbar-menu:hover{color:var(--kv-text);}
+.kv-topbar-title{
+  font-family:var(--kv-font);font-size:0.92rem;font-weight:700;
+  color:var(--kv-text);flex:1;letter-spacing:-0.01em;
+}
+.kv-theme-toggle{
+  width:34px;height:34px;border-radius:var(--kv-r-sm);background:none;
+  border:1px solid var(--kv-border2);color:var(--kv-text2);cursor:pointer;line-height:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color 0.2s,background 0.2s,color 0.2s;
+}
+.kv-theme-toggle:hover{border-color:var(--kv-blue-border);background:var(--kv-blue-dim);color:var(--kv-accent);}
+[data-theme="dark"] .kv-ico-sun{display:none;}
+[data-theme="dark"] .kv-ico-moon{display:block;}
+[data-theme="light"] .kv-ico-sun{display:block;}
+[data-theme="light"] .kv-ico-moon{display:none;}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+.kv-main{
+  margin-left:var(--kv-sidebar-w);flex:1;min-height:100vh;background:var(--kv-bg);
+  display:flex;flex-direction:column;transition:background 0.3s;
+}
+.kv-section{padding:2rem 2rem;}
+
+/* ── HOME ────────────────────────────────────────────────── */
+.kv-welcome{margin-bottom:2rem;}
+.kv-welcome-heading{
+  font-family:var(--kv-font);font-size:1.55rem;font-weight:800;color:var(--kv-text);
+  letter-spacing:-0.025em;line-height:1.2;
+}
+.kv-welcome-accent{color:var(--kv-accent);}
+.kv-welcome-sub{color:var(--kv-text3);font-size:0.875rem;margin-top:0.35rem;font-family:var(--kv-body);}
+.kv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1rem;margin-bottom:2rem;}
+.kv-stat-card{
+  background:var(--kv-surface);border:1px solid var(--kv-border);border-radius:var(--kv-r-lg);
+  padding:1.35rem 1.5rem;position:relative;overflow:hidden;
+  transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s;
+}
+.kv-stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--kv-blue),var(--kv-blue2));opacity:0.6;
+}
+.kv-stat-card:hover{border-color:var(--kv-blue-border);box-shadow:var(--kv-shadow-sm);transform:translateY(-2px);}
+.kv-stat-label{
+  font-family:var(--kv-font);font-size:0.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.12em;color:var(--kv-text3);margin-bottom:0.5rem;
+}
+.kv-stat-value{font-family:var(--kv-mono);font-size:1.9rem;font-weight:500;color:var(--kv-text);letter-spacing:-0.02em;line-height:1;}
+
+/* ── 2FA BANNER ──────────────────────────────────────────── */
+.kv-2fa-banner{
+  display:none;
+  align-items:stretch;
+  background:var(--kv-surface);
+  border:1px solid var(--kv-blue-border);
+  border-radius:var(--kv-r-lg);
+  overflow:hidden;
+  margin-bottom:1.75rem;
+  position:relative;
+}
+.kv-2fa-banner.visible{display:flex;}
+
+/* Left accent stripe */
+.kv-2fa-stripe{
+  width:4px;
+  flex-shrink:0;
+  background:linear-gradient(180deg, var(--kv-blue) 0%, var(--kv-blue2) 100%);
+}
+
+/* Inner content row */
+.kv-2fa-inner{
+  display:flex;
+  align-items:center;
+  gap:1.1rem;
+  padding:1rem 1.25rem 1rem 1.1rem;
+  flex:1;
+  flex-wrap:wrap;
+}
+
+/* Icon badge */
+.kv-2fa-icon{
+  width:40px;
+  height:40px;
+  border-radius:var(--kv-r-sm);
+  background:var(--kv-blue-dim);
+  border:1px solid var(--kv-blue-border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  color:var(--kv-accent);
+}
+[data-theme="light"] .kv-2fa-icon{color:var(--kv-blue);}
+
+/* Text block */
+.kv-2fa-text{flex:1;min-width:160px;}
+.kv-2fa-title{
+  font-family:var(--kv-font);
+  font-size:0.855rem;
+  font-weight:700;
+  color:var(--kv-accent);
+  letter-spacing:-0.01em;
+  margin-bottom:0.15rem;
+}
+[data-theme="light"] .kv-2fa-title{color:var(--kv-blue);}
+.kv-2fa-desc{
+  font-family:var(--kv-body);
+  font-size:0.785rem;
+  color:var(--kv-text3);
+  line-height:1.5;
+}
+
+/* Actions group — CTA + dismiss side by side */
+.kv-2fa-actions{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  flex-shrink:0;
+}
+
+/* CTA button */
+.kv-2fa-cta{
+  font-family:var(--kv-font);
+  font-size:0.775rem;
+  font-weight:700;
+  letter-spacing:0.01em;
+  color:#fff;
+  background:var(--kv-blue);
+  border:none;
+  border-radius:var(--kv-r-sm);
+  padding:0.48rem 1.05rem;
+  cursor:pointer;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:0.38rem;
+  text-decoration:none;
+  transition:background 0.15s,box-shadow 0.15s,transform 0.1s;
+}
+.kv-2fa-cta:hover{
+  background:var(--kv-blue2);
+  box-shadow:0 4px 14px rgba(32,96,232,0.35);
+  transform:translateY(-1px);
+}
+
+/* Dismiss button — sits right next to Enable 2FA */
+.kv-2fa-dismiss{
+  background:none;
+  border:1px solid var(--kv-border2);
+  border-radius:var(--kv-r-sm);
+  color:var(--kv-text3);
+  cursor:pointer;
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  line-height:0;
+  transition:color 0.2s,background 0.2s,border-color 0.2s;
+}
+.kv-2fa-dismiss:hover{
+  color:var(--kv-text2);
+  background:var(--kv-nav-hover-bg);
+  border-color:var(--kv-border2);
+}
+
+/* ── Section heading ─────────────────────────────────────── */
+.kv-section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.kv-section-heading{font-family:var(--kv-font);font-size:0.9rem;font-weight:700;color:var(--kv-text);letter-spacing:-0.01em;}
+
+/* ── Notebooks grid ──────────────────────────────────────── */
+.kv-notebooks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;}
+.kv-nb-empty,.kv-entry-empty{color:var(--kv-text3);font-size:0.84rem;padding:2.5rem 0;grid-column:1/-1;font-family:var(--kv-body);}
+
+/* Notebook card */
+.kv-nb-card{
+  background:var(--kv-surface);border:1px solid var(--kv-border);border-radius:var(--kv-r-lg);
+  padding:1.35rem;cursor:pointer;position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.18s,box-shadow 0.2s;
+}
+.kv-nb-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--nb-color,var(--kv-blue));}
+.kv-nb-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 0%,var(--kv-nb-glow),transparent);pointer-events:none;
+}
+.kv-nb-card:hover{border-color:var(--kv-blue-border);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.2);}
+.kv-nb-card-name{font-family:var(--kv-font);font-size:0.9rem;font-weight:700;color:var(--kv-text);margin-bottom:0.25rem;margin-top:0.4rem;}
+.kv-nb-card-desc{font-family:var(--kv-body);font-size:0.79rem;color:var(--kv-text3);margin-bottom:0.8rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.kv-nb-card-meta{display:flex;align-items:center;justify-content:space-between;}
+.kv-nb-card-count{font-family:var(--kv-mono);font-size:0.7rem;color:var(--kv-text3);background:var(--kv-bg3);border:1px solid var(--kv-border);border-radius:20px;padding:0.1rem 0.55rem;}
+
+/* ── Notebook Detail ─────────────────────────────────────── */
+.kv-entries-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;}
+.kv-entries-header-left{display:flex;align-items:center;gap:0.9rem;}
+.kv-nb-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.kv-entries-title{font-family:var(--kv-font);font-size:1.15rem;font-weight:800;color:var(--kv-text);letter-spacing:-0.02em;line-height:1.2;margin:0;}
+.kv-entries-sub{font-family:var(--kv-body);font-size:0.78rem;color:var(--kv-text3);margin:0;}
+.kv-btn-add-entry{
+  background:var(--kv-blue);color:#fff;border:none;border-radius:var(--kv-r-sm);
+  font-family:var(--kv-font);font-size:0.78rem;font-weight:700;padding:0.52rem 1.1rem;cursor:pointer;
+  display:flex;align-items:center;gap:0.4rem;white-space:nowrap;letter-spacing:0.01em;
+  transition:background 0.2s,transform 0.15s,box-shadow 0.2s;
+}
+.kv-btn-add-entry:hover{background:var(--kv-blue2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(32,96,232,0.3);}
+.kv-entry-search-wrap{margin-bottom:1.25rem;}
+.kv-entry-search-inner{position:relative;display:flex;align-items:center;}
+.kv-entry-search-ico{position:absolute;left:0.75rem;color:var(--kv-text3);pointer-events:none;z-index:1;}
+.kv-entry-search-input{
+  width:100%;background:var(--kv-surface);border:1px solid var(--kv-border2);
+  border-radius:var(--kv-r-sm);color:var(--kv-text);font-size:0.86rem;
+  padding:0.55rem 0.9rem 0.55rem 2.35rem !important;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.kv-entry-search-input:focus{border-color:var(--kv-blue);box-shadow:0 0 0 3px var(--kv-blue-dim);}
+.kv-entry-search-input::placeholder{color:var(--kv-text3);}
+.kv-entries-list{display:flex;flex-direction:column;gap:0.4rem;}
+.kv-entry-card{
+  background:var(--kv-surface);border:1px solid var(--kv-border);border-radius:var(--kv-r-lg);
+  padding:0.85rem 1.15rem;display:flex;align-items:center;gap:0.9rem;cursor:pointer;
+  transition:border-color 0.2s,transform 0.15s,box-shadow 0.18s;
+}
+.kv-entry-card:hover{border-color:var(--kv-blue-border);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+.kv-entry-icon{
+  width:37px;height:37px;border-radius:var(--kv-r-sm);background:var(--kv-blue-dim);
+  border:1px solid var(--kv-blue-border);display:flex;align-items:center;justify-content:center;
+  font-family:var(--kv-mono);font-size:0.78rem;font-weight:500;color:var(--kv-accent);
+  flex-shrink:0;text-transform:uppercase;letter-spacing:0.02em;
+}
+.kv-entry-info{flex:1;min-width:0;}
+.kv-entry-title{font-family:var(--kv-font);font-size:0.87rem;font-weight:600;color:var(--kv-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kv-entry-user{font-size:0.75rem;color:var(--kv-text3);font-family:var(--kv-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kv-entry-actions{display:flex;gap:0.25rem;flex-shrink:0;}
+.kv-entry-delete{
+  background:transparent;border:none;color:var(--kv-text3);cursor:pointer;
+  padding:5px 7px;border-radius:6px;line-height:0;transition:color 0.15s,background 0.15s;
+}
+.kv-entry-delete:hover{color:var(--kv-red);background:var(--kv-red-dim);}
+
+/* ── Dropdown ────────────────────────────────────────────── */
+.kv-nb-dots-btn{
+  opacity:0;background:none;border:none;color:var(--kv-text2);cursor:pointer;
+  padding:3px 4px;border-radius:4px;line-height:0;flex-shrink:0;
+  transition:opacity 0.15s,color 0.15s,background 0.15s;
+}
+.kv-nav-item:hover .kv-nb-dots-btn,.kv-nav-item.active .kv-nb-dots-btn{opacity:0.7;}
+.kv-nb-dots-btn:hover{opacity:1!important;color:var(--kv-text);background:var(--kv-nav-hover-bg);}
+.kv-nb-menu-wrap{position:relative;flex-shrink:0;}
+.kv-nb-dropdown{
+  opacity:0;visibility:hidden;transform:translateY(5px);pointer-events:none;
+  transition:opacity 0.15s ease,transform 0.15s ease,visibility 0.15s;
+  position:absolute;right:0;top:calc(100% + 4px);background:var(--kv-surface);
+  border:1px solid var(--kv-border2);border-radius:var(--kv-r-sm);min-width:165px;
+  z-index:500;box-shadow:var(--kv-shadow);padding:4px 0;
+}
+.kv-nb-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;}
+.kv-nb-divider{height:1px;background:var(--kv-border);margin:4px 0;}
+.kv-nb-item{
+  display:flex;align-items:center;gap:0.5rem;width:100%;background:none;border:none;
+  color:var(--kv-text2);font-size:0.8125rem;padding:0.45rem 0.85rem;cursor:pointer;
+  text-align:left;transition:background 0.12s,color 0.12s;white-space:nowrap;
+  font-family:var(--kv-body);
+}
+.kv-nb-item:hover{background:var(--kv-nav-hover-bg);color:var(--kv-text);}
+.kv-nb-item.danger{color:var(--kv-red);}
+.kv-nb-item.danger:hover{background:var(--kv-red-dim);color:var(--kv-red);}
+
+/* ── Modals ──────────────────────────────────────────────── */
+.modal-content{background:var(--kv-surface)!important;border:1px solid var(--kv-border2)!important;border-radius:var(--kv-r-lg)!important;box-shadow:var(--kv-shadow)!important;color:var(--kv-text)!important;}
+.modal-backdrop{background:#000!important;}
+.vk-modal{background:var(--kv-surface);border:1px solid var(--kv-border2);border-radius:var(--kv-r-lg);color:var(--kv-text);}
+.vk-modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--kv-border);}
+.vk-modal-title{font-family:var(--kv-font);font-size:0.95rem;font-weight:700;color:var(--kv-text);}
+.vk-modal-close{background:none;border:none;color:var(--kv-text3);cursor:pointer;padding:0;line-height:0;transition:color 0.2s;}
+.vk-modal-close:hover{color:var(--kv-text);}
+.vk-modal-body{padding:1.4rem;display:flex;flex-direction:column;gap:1rem;}
+.vk-modal-footer{padding:0.9rem 1.4rem;border-top:1px solid var(--kv-border);display:flex;align-items:center;justify-content:flex-end;gap:0.65rem;}
+
+/* Form fields */
+.field-label{font-family:var(--kv-font);font-size:0.72rem;font-weight:700;color:var(--kv-text2);text-transform:uppercase;letter-spacing:0.08em;}
+.field-input{
+  background:var(--kv-surface2);border:1.5px solid var(--kv-border2);border-radius:var(--kv-r-sm);
+  color:var(--kv-text);font-size:0.88rem;padding:0.58rem 0.85rem;outline:none;width:100%;
+  font-family:var(--kv-body);
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.field-input:focus{border-color:var(--kv-blue);box-shadow:0 0 0 3px var(--kv-blue-dim);}
+.field-input::placeholder{color:var(--kv-text3);}
+.field-textarea{resize:vertical;min-height:80px;}
+.optional{font-weight:400;text-transform:none;letter-spacing:0;font-size:0.75rem;color:var(--kv-text3);}
+
+/* Buttons */
+.btn-cancel{background:none;border:1.5px solid var(--kv-border2);border-radius:var(--kv-r-sm);color:var(--kv-text2);font-family:var(--kv-font);font-size:0.83rem;font-weight:600;padding:0.5rem 1rem;cursor:pointer;transition:border-color 0.15s,background 0.15s,color 0.15s;}
+.btn-cancel:hover{background:var(--kv-nav-hover-bg);border-color:var(--kv-border2);color:var(--kv-text);}
+.btn-confirm{background:var(--kv-blue);border:1.5px solid var(--kv-blue);border-radius:var(--kv-r-sm);color:#fff;font-family:var(--kv-font);font-size:0.83rem;font-weight:700;padding:0.5rem 1.2rem;cursor:pointer;transition:background 0.15s,box-shadow 0.15s;}
+.btn-confirm:hover{background:var(--kv-blue2);box-shadow:0 4px 12px rgba(32,96,232,0.3);}
+.btn-danger{background:var(--kv-red);border:none;border-radius:var(--kv-r-sm);color:#fff;font-family:var(--kv-font);font-size:0.83rem;font-weight:700;padding:0.5rem 1.2rem;cursor:pointer;transition:opacity 0.15s;}
+.btn-danger:hover{opacity:0.85;}
+.btn-generate{background:none;border:none;color:var(--kv-accent);font-size:0.78rem;font-weight:600;font-family:var(--kv-body);padding:0.2rem 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-top:0.15rem;align-self:flex-start;transition:opacity 0.2s;}
+.btn-generate:hover{opacity:0.75;}
+.required{color:var(--kv-red);margin-left:2px;}
+.field-error{color:var(--kv-red);font-size:0.72rem;margin-top:0.2rem;}
+
+/* Colour picker */
+.color-picker{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.color-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform 0.15s,border-color 0.15s;}
+.color-swatch:hover{transform:scale(1.15);}
+.color-swatch.active{border-color:var(--kv-text);transform:scale(1.1);}
+
+/* Password toggle */
+.password-wrap{position:relative;}
+.password-wrap .field-input{padding-right:2.8rem;}
+.toggle-pw{position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--kv-text3);cursor:pointer;padding:0;line-height:0;transition:color 0.2s;}
+.toggle-pw:hover{color:var(--kv-accent);}
+
+/* Strength meter */
+#entry-strength-wrap{margin-top:0.5rem;}
+#entry-strength-wrap > div{display:flex;gap:5px;}
+#entry-strength-wrap > div > div{flex:1;height:4px;border-radius:4px;background:var(--kv-bg4);transition:background 0.3s;}
+#entry-pw-strength-label{display:block;margin-top:0.35rem;font-size:0.73rem;font-family:var(--kv-mono);}
+
+/* Confirm modal icon */
+.confirm-modal-icon-wrap{width:40px;height:40px;border-radius:var(--kv-r-sm);background:var(--kv-blue-dim);border:1px solid var(--kv-blue-border);color:var(--kv-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.confirm-modal-icon-wrap.danger{background:var(--kv-red-dim);border-color:var(--kv-red-border);color:var(--kv-red);}
+.confirm-modal-line{margin:0;font-family:var(--kv-body);}
+
+/* Colour change overlay */
+.color-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.color-modal-box{background:var(--kv-surface);border:1px solid var(--kv-border2);border-radius:var(--kv-r-lg);padding:1.5rem;min-width:285px;box-shadow:var(--kv-shadow);}
+.color-modal-title{font-family:var(--kv-font);font-size:0.95rem;font-weight:700;color:var(--kv-text);margin-bottom:1rem;}
+
+/* Account switcher */
+.acct-switcher-wrap{position:relative;flex:1;min-width:0;}
+.acct-dropdown{z-index:600;}
+.acct-item-active{background:var(--kv-blue-dim)!important;cursor:default!important;}
+.nb-dropdown,.acct-dropdown{background:var(--kv-surface)!important;border:1px solid var(--kv-border2)!important;box-shadow:var(--kv-shadow)!important;}
+.nb-menu-item{color:var(--kv-text2)!important;font-family:var(--kv-body)!important;}
+.nb-menu-item:hover{background:var(--kv-nav-hover-bg)!important;color:var(--kv-text)!important;}
+.nb-menu-item.danger{color:var(--kv-red)!important;}
+.nb-menu-item.danger:hover{background:var(--kv-red-dim)!important;}
+.nb-menu-divider{background:var(--kv-border)!important;}
+
+/* Sidebar overlay */
+.kv-sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99;}
+
+/* Toast */
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.4rem;}
+.toast-msg{background:var(--kv-surface);border:1px solid var(--kv-border2);color:var(--kv-text);padding:0.6rem 1rem;border-radius:var(--kv-r-sm);font-size:0.8125rem;font-family:var(--kv-body);box-shadow:var(--kv-shadow);max-width:300px;animation:kv-toast-in 0.3s cubic-bezier(0.22,1,0.36,1);}
+.toast-msg.success{border-color:rgba(74,222,128,0.3);color:var(--kv-green);}
+.toast-msg.error{border-color:var(--kv-red-border);color:var(--kv-red);}
+@keyframes kv-toast-in{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+
+.delete-msg{color:var(--kv-text2);font-size:0.875rem;font-family:var(--kv-body);}
+
+/* Logout modal cards */
+.logout-option-card{display:flex;align-items:center;gap:0.9rem;width:100%;background:var(--kv-surface2);border:1.5px solid var(--kv-border);border-radius:var(--kv-r-lg);padding:0.85rem 1rem;cursor:pointer;text-align:left;transition:border-color 0.2s,background 0.2s,transform 0.15s;font-family:var(--kv-body);color:var(--kv-text);}
+.logout-option-card:hover{background:var(--kv-surface);border-color:var(--kv-blue-border);transform:translateY(-1px);}
+.logout-option-card.logout-option-danger:hover{border-color:var(--kv-red-border);background:var(--kv-red-dim);}
+.logout-option-icon{width:40px;height:40px;border-radius:var(--kv-r-sm);border:1px solid transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logout-option-text{display:flex;flex-direction:column;gap:0.1rem;flex:1;}
+.logout-option-title{font-family:var(--kv-font);font-size:0.875rem;font-weight:700;color:var(--kv-text);}
+.logout-option-sub{font-size:0.75rem;color:var(--kv-text3);font-family:var(--kv-body);}
+.logout-option-card.logout-option-danger .logout-option-title{color:var(--kv-red);}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media(max-width:991px){
+  .kv-sidebar{transform:translateX(-100%);}
+  .kv-sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,0.5);}
+  .kv-sidebar-overlay.active{display:block;}
+  .kv-sidebar-close{display:flex;align-items:center;justify-content:center;}
+  .kv-main{margin-left:0;}
+  .kv-topbar-menu{display:flex;}
+  .kv-section{padding:1.35rem 1.1rem;}
+  .kv-topbar{padding:0 1.1rem;}
+}
+@media(max-width:576px){
+  .kv-stats{grid-template-columns:1fr 1fr;}
+  .kv-stat-value{font-size:1.5rem;}
+  .kv-entries-header{flex-direction:column;align-items:flex-start;}
+  .toast-container{right:1rem;left:1rem;}
+  .toast-msg{max-width:100%;}
+  .kv-2fa-inner{gap:0.75rem;}
+  .kv-2fa-actions{width:100%;justify-content:flex-end;}
+}
+</style>
+
+<div class="kv-shell">
+
+  <aside class="kv-sidebar" id="sidebar">
+    <div class="kv-brand">
+      <div class="kv-brand-lockup">
+        <!-- ── Logo: matches index.html exactly ── -->
+        <div class="kv-brand-icon">
+          <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="#0a0f1e"/>
+            <path d="M18 7L9 11v7.5c0 5.25 3.8 10.15 9 11.5 5.2-1.35 9-6.25 9-11.5V11L18 7z" fill="#2060e8"/>
+            <circle cx="18" cy="17" r="3.2" fill="white"/>
+            <rect x="16.35" y="19.2" width="3.3" height="4.8" rx="0.8" fill="white"/>
           </svg>
         </div>
-        <span class="brand-name">VaultKey</span>
+        <span class="kv-brand-name">KeyVora</span>
       </div>
-
-      <button class="sidebar-close d-lg-none" onclick="toggleSidebar()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
+      <button class="kv-sidebar-close d-lg-none" onclick="toggleSidebar()" aria-label="Close sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
 
-    <div class="sidebar-search">
-      <div class="search-wrap">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    <div class="kv-sidebar-search">
+      <div class="kv-search-wrap">
+        <svg class="kv-search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="global-search" class="search-input" placeholder="Search vault..."/>
+        <input type="text" id="global-search" class="kv-search-input" placeholder="Search vault" autocomplete="off"/>
       </div>
     </div>
 
-    <div class="sidebar-section-label">Notebooks</div>
-
-    <nav class="sidebar-nav" id="notebooks-nav">
-      <div class="nav-placeholder">Loading...</div>
+    <div class="kv-sec-label">Notebooks</div>
+    <nav class="kv-nav" id="notebooks-nav">
+      <div class="kv-nav-placeholder">Loading…</div>
     </nav>
 
-    <button class="btn-new-notebook" id="btn-new-notebook">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
+    <button class="kv-btn-new-nb" id="btn-new-notebook">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
       New Notebook
     </button>
 
-    <div class="sidebar-footer">
+    <div class="kv-sidebar-footer">
       <div class="acct-switcher-wrap" style="position:relative;flex:1;min-width:0;">
-        <div class="user-chip"
-             onclick="toggleAccountSwitcher(event)"
-             style="cursor:pointer;"
-             title="Switch or manage accounts">
-          <div class="user-avatar">{{ user.username[0].upper() }}</div>
-          <div class="user-info">
-            <span class="user-name">{{ user.username }}</span>
-            <span class="user-role">Personal Vault</span>
+        <div class="kv-user-chip" onclick="toggleAccountSwitcher(event)" style="cursor:pointer;" title="Switch or manage accounts">
+          <div class="kv-user-avatar user-avatar">{{ user.username[0].upper() }}</div>
+          <div class="kv-user-info">
+            <span class="kv-user-name user-name">{{ user.username }}</span>
+            <span class="kv-user-role">Personal Vault</span>
           </div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-               stroke="var(--text3)" stroke-width="2"
-               style="margin-left:auto;flex-shrink:0;transition:transform 0.2s;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--kv-text3)" stroke-width="2" style="margin-left:auto;flex-shrink:0;transition:transform 0.2s;">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </div>
       </div>
-
-      <button class="btn-logout" onclick="openLogoutModal()" title="Sign out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="kv-btn-logout btn-logout" onclick="openLogoutModal()" title="Sign out">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
           <line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
       </button>
     </div>
-
   </aside>
 
-  <!-- ── Main Content ── -->
-  <main class="main-content" id="main-content">
+  <main class="kv-main" id="main-content">
 
-    <header class="topbar">
-      <button class="topbar-menu d-lg-none" onclick="toggleSidebar()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <header class="kv-topbar">
+      <button class="kv-topbar-menu d-lg-none" onclick="toggleSidebar()" aria-label="Open sidebar">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
-
-      <div class="topbar-title" id="topbar-title">Dashboard</div>
-      <div class="topbar-actions" id="topbar-actions"></div>
+      <div class="kv-topbar-title" id="topbar-title">Dashboard</div>
+      <div id="topbar-actions" style="display:flex;align-items:center;gap:0.6rem;">
+        <button class="kv-theme-toggle" id="kv-theme-btn" title="Toggle light / dark" aria-label="Toggle theme">
+          <svg class="kv-ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="kv-ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <!-- Dashboard Home -->
-    <section class="content-section" id="section-home">
-
-      <div class="welcome-block">
-        <h2 class="welcome-heading">
-          Good to have you back,
-          <span class="accent-text">{{ user.username }}</span>
-        </h2>
-        <p class="welcome-sub">Your vault is secure and up to date.</p>
+    <section class="kv-section content-section" id="section-home">
+      <div class="kv-welcome">
+        <h2 class="kv-welcome-heading">Welcome back, <span class="kv-welcome-accent">{{ user.username }}</span></h2>
+        <p class="kv-welcome-sub">Your vault is encrypted and secure.</p>
       </div>
 
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Notebooks</div>
-          <div class="stat-value" id="stat-notebooks">—</div>
+      <div class="kv-stats" id="stats-grid">
+        <div class="kv-stat-card">
+          <div class="kv-stat-label">Notebooks</div>
+          <div class="kv-stat-value" id="stat-notebooks">—</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Passwords Stored</div>
-          <div class="stat-value" id="stat-entries">—</div>
+        <div class="kv-stat-card">
+          <div class="kv-stat-label">Passwords Stored</div>
+          <div class="kv-stat-value" id="stat-entries">—</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Member Since</div>
-          <div class="stat-value" id="stat-since">—</div>
+        <div class="kv-stat-card">
+          <div class="kv-stat-label">Member Since</div>
+          <div class="kv-stat-value" id="stat-since" style="font-size:1.1rem;line-height:1.3;padding-top:0.3rem;">—</div>
         </div>
       </div>
 
-      <!-- 2FA security nudge banner (shown only when 2FA is off) -->
-      <div id="dashboard-2fa-nudge" style="display:none;margin-bottom:1.5rem;">
-        <div style="
-          display:flex;align-items:center;justify-content:space-between;gap:1rem;
-          background:rgba(240,160,96,0.08);
-          border:1px solid rgba(240,160,96,0.3);
-          border-radius:var(--radius);
-          padding:0.85rem 1.25rem;">
-          <div style="display:flex;align-items:center;gap:0.75rem;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0a060" stroke-width="2" style="flex-shrink:0;">
+      <!-- 2FA nudge banner -->
+      <div id="dashboard-2fa-nudge" class="kv-2fa-banner">
+        <div class="kv-2fa-stripe"></div>
+        <div class="kv-2fa-inner">
+          <div class="kv-2fa-icon">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
+              <circle cx="12" cy="16" r="0.5" fill="currentColor"/>
             </svg>
-            <span style="font-size:0.875rem;color:var(--text2);">
-              <strong style="color:#f0a060;">Two-factor authentication is off.</strong>
-              Add an extra layer of security to protect your vault.
-            </span>
           </div>
-          <a href="/profile" style="
-            flex-shrink:0;
-            font-size:0.8125rem;font-weight:700;
-            color:#f0a060;text-decoration:none;
-            border:1px solid rgba(240,160,96,0.4);
-            border-radius:var(--radius-sm);
-            padding:0.35rem 0.85rem;
-            transition:background 0.2s,border-color 0.2s;">
-            Enable 2FA →
-          </a>
+          <div class="kv-2fa-text">
+            <div class="kv-2fa-title">Two-factor authentication is disabled</div>
+            <div class="kv-2fa-desc">Add a TOTP authenticator to protect your vault from unauthorized access.</div>
+          </div>
+          <!-- Actions: Enable 2FA + Dismiss side by side -->
+          <div class="kv-2fa-actions">
+            <a href="/profile" class="kv-2fa-cta">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              Enable 2FA
+            </a>
+            <button
+              class="kv-2fa-dismiss"
+              id="btn-2fa-dismiss"
+              title="Dismiss"
+              aria-label="Dismiss 2FA banner"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="section-heading-row">
-        <h3 class="section-heading">Recent Notebooks</h3>
+      <div class="kv-section-row">
+        <h3 class="kv-section-heading">Recent Notebooks</h3>
       </div>
-
-      <div class="notebooks-grid" id="notebooks-grid">
-        <div class="nb-empty">No notebooks yet. Create one to get started.</div>
+      <div class="kv-notebooks-grid notebooks-grid" id="notebooks-grid">
+        <div class="kv-nb-empty nb-empty">No notebooks yet. Create one to get started.</div>
       </div>
-
     </section>
 
-    <!-- Notebook Detail View -->
-    <section class="content-section d-none" id="section-notebook">
-
-      <div class="entries-header">
-        <div class="entries-header-left" style="align-items:center;">
-          <div class="nb-dot" id="nb-color-dot" style="flex-shrink:0;margin-top:0;"></div>
+    <!-- Notebook Detail -->
+    <section class="kv-section content-section d-none" id="section-notebook">
+      <div class="kv-entries-header entries-header">
+        <div class="kv-entries-header-left entries-header-left" style="align-items:center;">
+          <div class="kv-nb-dot nb-dot" id="nb-color-dot" style="flex-shrink:0;"></div>
           <div style="display:flex;flex-direction:column;justify-content:center;">
-            <h2 class="entries-title" id="entries-title" style="margin:0;line-height:1.2;">Notebook</h2>
-            <p class="entries-sub" id="entries-sub" style="margin:0;"></p>
+            <h2 class="kv-entries-title entries-title" id="entries-title" style="margin:0;line-height:1.2;">Notebook</h2>
+            <p class="kv-entries-sub entries-sub" id="entries-sub" style="margin:0;"></p>
           </div>
         </div>
-
-        <button class="btn-add-entry" id="btn-add-entry">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
+        <button class="kv-btn-add-entry btn-add-entry" id="btn-add-entry">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
           Add Entry
         </button>
       </div>
-
-      <!-- Entry Search Bar -->
-      <div class="sidebar-search" style="padding:0 0 1rem 0;">
-        <div class="search-wrap">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      <div class="kv-entry-search-wrap">
+        <div class="kv-entry-search-inner">
+          <svg class="kv-entry-search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="text" id="entry-search" class="search-input" placeholder="Search entries..."/>
+          <input type="text" id="entry-search" class="kv-entry-search-input" placeholder="Search entries" autocomplete="off"/>
         </div>
       </div>
-
-      <div class="entries-list" id="entries-list">
-        <div class="entry-empty">No entries yet. Add your first password.</div>
+      <div class="kv-entries-list entries-list" id="entries-list">
+        <div class="kv-entry-empty entry-empty">No entries yet. Add your first password.</div>
       </div>
-
     </section>
 
     <!-- Search Results -->
-    <section class="content-section d-none" id="section-search">
-      <h2 class="entries-title" style="margin-bottom:1.5rem;">Search Results</h2>
-      <div class="entries-list" id="search-results-list"></div>
+    <section class="kv-section content-section d-none" id="section-search">
+      <h2 class="kv-entries-title" style="margin-bottom:1.5rem;font-family:var(--kv-font);">Search Results</h2>
+      <div class="kv-entries-list entries-list" id="search-results-list"></div>
     </section>
 
   </main>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     Notebook Modal
-══════════════════════════════════════════════════════════ -->
+<!-- NOTEBOOK MODAL -->
 <div class="modal fade" id="notebookModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
@@ -235,14 +805,15 @@
           <input type="text" id="nb-desc" class="field-input" placeholder="Short description"/>
         </div>
         <div class="field-group">
-          <label class="field-label">Color</label>
+          <label class="field-label">Colour</label>
           <div class="color-picker" id="color-picker">
-            <div class="color-swatch active" data-color="#4f8ef7" style="background:#4f8ef7;"></div>
-            <div class="color-swatch" data-color="#c8f060" style="background:#c8f060;"></div>
-            <div class="color-swatch" data-color="#f06090" style="background:#f06090;"></div>
-            <div class="color-swatch" data-color="#f0a060" style="background:#f0a060;"></div>
-            <div class="color-swatch" data-color="#60d4f0" style="background:#60d4f0;"></div>
-            <div class="color-swatch" data-color="#a060f0" style="background:#a060f0;"></div>
+            <div class="color-swatch active" data-color="#1a4fcc" style="background:#1a4fcc;"></div>
+            <div class="color-swatch" data-color="#0891b2" style="background:#0891b2;"></div>
+            <div class="color-swatch" data-color="#16a34a" style="background:#16a34a;"></div>
+            <div class="color-swatch" data-color="#d97706" style="background:#d97706;"></div>
+            <div class="color-swatch" data-color="#dc2626" style="background:#dc2626;"></div>
+            <div class="color-swatch" data-color="#7c3aed" style="background:#7c3aed;"></div>
+            <div class="color-swatch" data-color="#db2777" style="background:#db2777;"></div>
           </div>
         </div>
       </div>
@@ -254,9 +825,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     Entry Modal
-══════════════════════════════════════════════════════════ -->
+<!-- ENTRY MODAL -->
 <div class="modal fade" id="entryModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
@@ -269,67 +838,50 @@
         </button>
       </div>
       <div class="vk-modal-body">
-
         <div class="field-group">
           <label class="field-label">Title</label>
           <input type="text" id="entry-title" class="field-input" placeholder="e.g. GitHub, Netflix"/>
         </div>
-
         <div class="field-group">
           <label class="field-label">Username / Email <span class="optional">(optional)</span></label>
           <input type="text" id="entry-username" class="field-input" placeholder="username@example.com"/>
         </div>
-
-        <!-- OLD PASSWORD -->
         <div class="field-group" id="old-password-group">
           <label class="field-label">Old Password</label>
           <div class="password-wrap">
             <input type="password" id="entry-old-password" class="field-input" placeholder="No previous password" readonly/>
             <button type="button" class="toggle-pw" onclick="togglePassword('entry-old-password')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-
-        <!-- NEW PASSWORD -->
         <div class="field-group">
           <label class="field-label">Password</label>
           <div class="password-wrap">
             <input type="password" id="entry-password" class="field-input" placeholder="Enter new password"/>
             <button type="button" class="toggle-pw" onclick="togglePassword('entry-password')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
-          <button type="button" class="btn-generate" onclick="generatePassword()">
-            Generate strong password
-          </button>
-          <div id="entry-strength-wrap" style="display:none;margin-top:0.5rem;">
-            <div style="display:flex;gap:5px;">
-              <div id="entry-sb-1" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-              <div id="entry-sb-2" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-              <div id="entry-sb-3" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-              <div id="entry-sb-4" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
+          <button type="button" class="btn-generate" onclick="generatePassword()">Generate strong password</button>
+          <div id="entry-strength-wrap" style="display:none;">
+            <div>
+              <div id="entry-sb-1"></div>
+              <div id="entry-sb-2"></div>
+              <div id="entry-sb-3"></div>
+              <div id="entry-sb-4"></div>
             </div>
-            <span id="entry-pw-strength-label" style="margin-top:0.3rem;display:block;font-size:0.75rem;font-family:var(--mono);"></span>
+            <span id="entry-pw-strength-label"></span>
           </div>
         </div>
-
         <div class="field-group">
           <label class="field-label">URL <span class="optional">(optional)</span></label>
           <input type="text" id="entry-url" class="field-input" placeholder="https://example.com"/>
         </div>
-
         <div class="field-group">
           <label class="field-label">Notes <span class="optional">(optional)</span></label>
-          <textarea id="entry-notes" class="field-input field-textarea" placeholder="Any notes..."></textarea>
+          <textarea id="entry-notes" class="field-input field-textarea" placeholder="Any notes…"></textarea>
         </div>
-
       </div>
       <div class="vk-modal-footer">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
@@ -339,82 +891,55 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     Logout Modal
-══════════════════════════════════════════════════════════ -->
+<!-- LOGOUT MODAL -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
-    <div class="modal-content vk-modal" style="border-radius:var(--radius);overflow:hidden;">
-
+    <div class="modal-content vk-modal" style="border-radius:var(--kv-r-lg);overflow:hidden;">
       <div class="vk-modal-header" style="padding:1.25rem 1.5rem 1rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;">
-          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--red-dim);border:1px solid rgba(255,95,109,0.25);display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <div style="width:38px;height:38px;border-radius:var(--kv-r-sm);background:var(--kv-red-dim);border:1px solid var(--kv-red-border);display:flex;align-items:center;justify-content:center;color:var(--kv-red);flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </div>
           <div>
-            <h5 class="vk-modal-title" style="margin:0;font-size:1rem;">Sign Out</h5>
-            <p id="logout-acct-hint" style="margin:0;font-size:0.75rem;color:var(--text3);">Choose how to sign out</p>
+            <h5 class="vk-modal-title" style="margin:0;">Sign Out</h5>
+            <p id="logout-acct-hint" style="margin:0;font-size:0.75rem;color:var(--kv-text3);font-family:var(--kv-body);">Choose how to sign out</p>
           </div>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-
-      <div style="height:1px;background:var(--border);margin:0 1.5rem;"></div>
-
+      <div style="height:1px;background:var(--kv-border);margin:0 1.5rem;"></div>
       <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.65rem;">
         <button id="btn-confirm-logout" class="logout-option-card">
-          <div class="logout-option-icon" style="background:var(--accent-dim);border-color:rgba(200,240,96,0.25);color:var(--accent);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <div class="logout-option-icon" style="background:var(--kv-blue-dim);border-color:var(--kv-blue-border);color:var(--kv-accent);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </div>
           <div class="logout-option-text">
             <span class="logout-option-title">Sign out this account</span>
             <span class="logout-option-sub">Removes only the current session</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--kv-text3);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-
         <button id="btn-confirm-logout-all" class="logout-option-card logout-option-danger">
-          <div class="logout-option-icon" style="background:var(--red-dim);border-color:rgba(255,95,109,0.25);color:var(--red);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
+          <div class="logout-option-icon" style="background:var(--kv-red-dim);border-color:var(--kv-red-border);color:var(--kv-red);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
           <div class="logout-option-text">
             <span class="logout-option-title">Sign out all accounts</span>
             <span class="logout-option-sub">Clears every active session</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--kv-text3);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
-
       <div style="padding:0 1.5rem 1.25rem;display:flex;justify-content:flex-end;">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- Legacy delete confirm modal (kept for dashboard.js compatibility) -->
+<!-- Legacy delete modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content vk-modal">
@@ -432,64 +957,345 @@
   </div>
 </div>
 
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div class="kv-sidebar-overlay sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="toast-container" id="toast-container"></div>
-
-<style>
-.logout-option-card {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.85rem 1rem;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.2s, background 0.2s, transform 0.15s;
-  font-family: var(--font);
-}
-.logout-option-card:hover { background: var(--bg2); border-color: var(--border2); transform: translateY(-1px); }
-.logout-option-card.logout-option-danger:hover { border-color: rgba(255,95,109,0.4); background: var(--red-dim); }
-.logout-option-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.logout-option-text { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; }
-.logout-option-title { font-size: 0.875rem; font-weight: 700; color: var(--text); }
-.logout-option-sub { font-size: 0.75rem; color: var(--text3); }
-.logout-option-card.logout-option-danger .logout-option-title { color: var(--red); }
-</style>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 <script>
-  // ── Logout modal hint ────────────────────────────────────────
-  document.getElementById('logoutModal').addEventListener('show.bs.modal', async () => {
-    try {
-      const res  = await fetch('/api/accounts');
-      const data = await res.json();
-      const n    = data.accounts.length;
-      const hint = document.getElementById('logout-acct-hint');
-      hint.textContent = n > 1
-        ? `${n} accounts active — this removes only the current one`
-        : 'You have one account signed in';
-    } catch (_) {}
+// ── Shared notebook colour palette ───────────────────────────
+const KV_NB_COLORS = [
+  '#1a4fcc','#0891b2','#16a34a','#d97706','#dc2626','#7c3aed','#db2777',
+];
+
+// ── Theme toggle ─────────────────────────────────────────────
+(function(){
+  const btn = document.getElementById('kv-theme-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('kv_theme', next);
+  });
+})();
+
+// ── Password toggle ──────────────────────────────────────────
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+// ── Sidebar (mobile) ─────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen  = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('active', !isOpen);
+}
+
+// ── Strength colours — matches dashboard.js constants ────────
+const STRENGTH_COLORS = ['', '#dc2626', '#d97706', '#1a4fcc', '#16a34a'];
+const STRENGTH_LABELS = ['', 'Weak',    'Fair',    'Good',    'Strong'];
+
+function _calcStrengthScore(val) {
+  let s = 0;
+  if (val.length >= 8)           s++;
+  if (/[A-Z]/.test(val))         s++;
+  if (/[0-9]/.test(val))         s++;
+  if (/[^A-Za-z0-9]/.test(val))  s++;
+  return s;
+}
+
+(function hookStrength(){
+  const pwInput = document.getElementById('entry-password');
+  if (!pwInput) { setTimeout(hookStrength, 200); return; }
+  pwInput.addEventListener('input', function(){
+    const wrap  = document.getElementById('entry-strength-wrap');
+    const label = document.getElementById('entry-pw-strength-label');
+    const val   = this.value;
+    if (!val) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    const score = _calcStrengthScore(val);
+    for (let i = 1; i <= 4; i++) {
+      const bar = document.getElementById(`entry-sb-${i}`);
+      if (bar) bar.style.background = i <= score ? STRENGTH_COLORS[score] : 'var(--kv-bg4)';
+    }
+    if (label) {
+      label.textContent = STRENGTH_LABELS[score] || '';
+      label.style.color = STRENGTH_COLORS[score] || '';
+    }
+  });
+})();
+
+// ── 2FA dismiss button ────────────────────────────────────────
+(function(){
+  const dismissBtn = document.getElementById('btn-2fa-dismiss');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', function(){
+      const banner = document.getElementById('dashboard-2fa-nudge');
+      if (banner) {
+        banner.classList.remove('visible');
+        banner.style.display = 'none';
+      }
+    });
+  }
+})();
+
+// ── Override openColorModal to use shared palette ────────────
+window.openColorModal = function(nb) {
+  const existing = document.querySelector('.color-modal-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'color-modal-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'color-modal-box';
+  let selectedColor = nb.color || KV_NB_COLORS[0];
+
+  box.innerHTML = `
+    <div class="color-modal-title">Change Colour — ${nb.name}</div>
+    <div class="color-picker" id="color-modal-picker" style="margin-bottom:1.25rem;">
+      ${KV_NB_COLORS.map(c => `
+        <div class="color-swatch${c === selectedColor ? ' active' : ''}"
+             data-color="${c}" style="background:${c};"></div>
+      `).join('')}
+    </div>
+    <div style="display:flex;gap:0.65rem;justify-content:flex-end;">
+      <button class="btn-cancel" id="color-modal-cancel">Cancel</button>
+      <button class="btn-confirm" id="color-modal-save">Save</button>
+    </div>
+  `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  box.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      box.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      selectedColor = sw.dataset.color;
+    });
   });
 
-  // Wire logout option card buttons
-  document.getElementById('btn-confirm-logout').addEventListener('click', logoutCurrent);
-  document.getElementById('btn-confirm-logout-all').addEventListener('click', logoutAll);
+  box.querySelector('#color-modal-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
-  // ── 2FA nudge banner ─────────────────────────────────────────
-  // Show the nudge if 2FA is not enabled for this user.
-  (async function check2FANudge() {
-    try {
-      const res  = await fetch('/api/2fa/status');
-      const data = await res.json();
-      if (!data.totp_enabled) {
-        document.getElementById('dashboard-2fa-nudge').style.display = 'block';
+  box.querySelector('#color-modal-save').addEventListener('click', async () => {
+    overlay.remove();
+    const res  = await fetch(`/api/notebooks/${nb.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ color: selectedColor })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      await loadNotebooks();
+      if (typeof currentNotebookId !== 'undefined' && currentNotebookId === nb.id) {
+        const dot = document.getElementById('nb-color-dot');
+        if (dot) dot.style.background = selectedColor;
       }
-    } catch (_) {}
-  })();
+      showToast('Colour updated', 'success');
+    } else {
+      showToast(data.error || 'Failed to update colour', 'error');
+    }
+  });
+};
+
+// ── Notebook + entry card rendering ─────────────────────────
+(function(){
+  window.renderNotebooks = function(){
+    const grid = document.getElementById('notebooks-grid');
+    const nav  = document.getElementById('notebooks-nav');
+    if (!notebooks || notebooks.length === 0) {
+      grid.innerHTML = `<div class="kv-nb-empty nb-empty">No notebooks yet. Create one to get started.</div>`;
+      nav.innerHTML  = `<div class="kv-nav-placeholder nav-placeholder">No notebooks</div>`;
+      return;
+    }
+    grid.innerHTML = '';
+    nav.innerHTML  = '';
+    notebooks.forEach(nb => {
+      // Grid card
+      const card = document.createElement('div');
+      card.className = 'kv-nb-card nb-card';
+      card.style.setProperty('--nb-color', nb.color);
+      card.innerHTML = `
+        <div class="kv-nb-card-name nb-card-name">${nb.name}</div>
+        <div class="kv-nb-card-desc nb-card-desc">${nb.description || ''}</div>
+        <div class="kv-nb-card-meta nb-card-meta">
+          <span class="kv-nb-card-count">${nb.entry_count} entries</span>
+        </div>
+      `;
+      card.addEventListener('click', () => openNotebook(nb.id, nb.name, nb.color));
+      grid.appendChild(card);
+
+      // Sidebar nav item
+      const item = document.createElement('div');
+      item.className    = 'kv-nav-item nav-item';
+      item.dataset.nbId = nb.id;
+      item.innerHTML = `
+        <span class="kv-nav-dot nav-dot" style="background:${nb.color}"></span>
+        <span class="kv-nav-label nav-label">${nb.name}</span>
+        <div class="kv-nb-menu-wrap nb-menu-wrap" style="position:relative;flex-shrink:0;">
+          <button class="kv-nb-dots-btn icon-btn nb-dots-btn" title="Options">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+            </svg>
+          </button>
+          <div class="kv-nb-dropdown nb-dropdown">
+            <button class="kv-nb-item nb-menu-item" data-action="open">Open</button>
+            <button class="kv-nb-item nb-menu-item" data-action="rename">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Rename
+            </button>
+            <button class="kv-nb-item nb-menu-item" data-action="change-color">Change Colour</button>
+            <button class="kv-nb-item nb-menu-item" data-action="duplicate">Duplicate</button>
+            <div class="kv-nb-divider nb-menu-divider"></div>
+            <button class="kv-nb-item nb-menu-item danger" data-action="delete">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.kv-nb-menu-wrap') || e.target.closest('.kv-nb-dropdown')) return;
+        openNotebook(nb.id, nb.name, nb.color);
+      });
+      const dotsBtn  = item.querySelector('.kv-nb-dots-btn');
+      const dropdown = item.querySelector('.kv-nb-dropdown');
+      dotsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        document.querySelectorAll('.kv-nb-dropdown,.nb-dropdown').forEach(d => d.classList.remove('open'));
+        if (!isOpen) dropdown.classList.add('open');
+      });
+      dropdown.querySelectorAll('.kv-nb-item').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          dropdown.classList.remove('open');
+          const action = btn.dataset.action;
+          if (action === 'open') {
+            openNotebook(nb.id, nb.name, nb.color);
+          } else if (action === 'rename') {
+            const newName = await openRenameModal(nb);
+            if (!newName) return;
+            const res  = await fetch(`/api/notebooks/${nb.id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:newName}) });
+            const data = await res.json();
+            if (res.ok) {
+              await loadNotebooks();
+              if (currentNotebookId === nb.id) document.getElementById('entries-title').textContent = newName;
+              showToast('Notebook renamed', 'success');
+            } else { showToast(data.error || 'Failed to rename notebook', 'error'); }
+          } else if (action === 'change-color') {
+            openColorModal(nb);
+          } else if (action === 'duplicate') {
+            const confirmed = await openVKConfirm({
+              title: 'Duplicate Notebook',
+              lines: [`Create a copy of <strong>${nb.name}</strong>?`, 'All entries will be duplicated.'],
+              confirmLabel: 'Yes, Duplicate', isDanger: false,
+              icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
+            });
+            if (!confirmed) return;
+            const res  = await fetchWithVaultGate(`/api/notebooks/${nb.id}/duplicate`, { method:'POST' });
+            const data = await res.json();
+            if (res.ok) { await loadNotebooks(); showToast('Notebook duplicated', 'success'); }
+            else if (!data.locked) { showToast(data.error || 'Failed to duplicate', 'error'); }
+          } else if (action === 'delete') {
+            const entryWord = nb.entry_count === 1 ? '1 entry' : `${nb.entry_count} entries`;
+            const confirmed = await openVKConfirm({
+              title: `Delete "${nb.name}"?`,
+              lines: [
+                `Permanently delete <strong>${nb.name}</strong> and all its contents.`,
+                nb.entry_count > 0 ? `This notebook contains <strong>${entryWord}</strong> — they will all be lost.` : 'This notebook is empty.',
+                'This action <strong>cannot be undone</strong>.'
+              ],
+              confirmLabel: 'Yes, Delete', isDanger: true
+            });
+            if (!confirmed) return;
+            const res = await fetch(`/api/notebooks/${nb.id}`, { method:'DELETE' });
+            if (res.ok) {
+              if (currentNotebookId === nb.id) {
+                currentNotebookId = null; allEntries = [];
+                document.getElementById('entry-search').value = '';
+                document.getElementById('section-notebook').classList.add('d-none');
+                document.getElementById('section-home').classList.remove('d-none');
+              }
+              await loadNotebooks();
+              showToast('Notebook deleted', 'success');
+            } else { showToast('Failed to delete notebook', 'error'); }
+          }
+        });
+      });
+      nav.appendChild(item);
+    });
+  };
+
+  window.renderEntryCard = function(e, list) {
+    const div = document.createElement('div');
+    div.className = 'kv-entry-card entry-card';
+    div.innerHTML = `
+      <div class="kv-entry-icon entry-icon">${e.title[0]}</div>
+      <div class="kv-entry-info entry-info">
+        <div class="kv-entry-title entry-title">${e.title}</div>
+        <div class="kv-entry-user entry-user">${e.username || ''}</div>
+      </div>
+      <div class="kv-entry-actions entry-actions">
+        <button class="kv-entry-delete entry-delete" title="Delete">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    div.addEventListener('click', (event) => {
+      if (event.target.closest('.kv-entry-delete')) return;
+      openEntry(e);
+    });
+    div.querySelector('.kv-entry-delete').addEventListener('click', async (event) => {
+      event.stopPropagation();
+      await deleteEntry(e);
+    });
+    list.appendChild(div);
+  };
+})();
+
+// ── Close dropdowns on outside click ─────────────────────────
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.kv-nb-menu-wrap') && !e.target.closest('.nb-menu-wrap')) {
+    document.querySelectorAll('.kv-nb-dropdown,.nb-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// ── Logout modal ─────────────────────────────────────────────
+document.getElementById('logoutModal').addEventListener('show.bs.modal', async () => {
+  try {
+    const res  = await fetch('/api/accounts');
+    const data = await res.json();
+    const n    = data.accounts.length;
+    document.getElementById('logout-acct-hint').textContent = n > 1
+      ? `${n} accounts active — this removes only the current one`
+      : 'You have one account signed in';
+  } catch (_) {}
+});
+document.getElementById('btn-confirm-logout').addEventListener('click', logoutCurrent);
+document.getElementById('btn-confirm-logout-all').addEventListener('click', logoutAll);
+
+// ── 2FA nudge ─────────────────────────────────────────────────
+(async function check2FANudge(){
+  try {
+    const res  = await fetch('/api/2fa/status');
+    const data = await res.json();
+    if (!data.totp_enabled) {
+      const nudge = document.getElementById('dashboard-2fa-nudge');
+      if (nudge) nudge.classList.add('visible');
+    }
+  } catch (_) {}
+})();
 </script>
 
 {% endblock %}

@@ -1,6 +1,10 @@
-// profile.js — VaultKey
+// profile.js — KeyVora
 // Vault key architecture: master password is NEVER stored in
 // session. Only the derived vault key bytes live in the session.
+
+// Strength colours — index matches score (1–4)
+const STRENGTH_COLORS = ['', '#dc2626', '#d97706', '#1a4fcc', '#16a34a'];
+const STRENGTH_LABELS = ['', 'Weak',    'Fair',    'Good',    'Strong'];
 
 document.addEventListener('DOMContentLoaded', () => {
     loadStats();
@@ -52,12 +56,6 @@ async function detectGoogleUserPasswordState() {
 function _adaptPasswordCardForGoogleUser() {
     const currentPwGroup = document.getElementById('current-password')?.closest('.field-group');
     if (currentPwGroup) currentPwGroup.style.display = 'none';
-
-    const sub = document.querySelector('#change-password-card .profile-card-sub');
-    if (sub) sub.textContent = 'Set a master password to encrypt your vault';
-
-    const title = document.querySelector('#change-password-card .profile-card-title');
-    if (title) title.textContent = 'Set Master Password';
 
     const btn = document.getElementById('btn-save-password');
     if (btn) btn.textContent = 'Set Master Password';
@@ -141,7 +139,6 @@ async function loadPrefs() {
         if (!saved) return;
         const prefs = JSON.parse(saved);
         if (typeof prefs.autolock      !== 'undefined') document.getElementById('pref-autolock').checked       = prefs.autolock;
-        if (typeof prefs.strength      !== 'undefined') document.getElementById('pref-strength').checked       = prefs.strength;
         if (typeof prefs.confirmDelete !== 'undefined') document.getElementById('pref-confirm-delete').checked = prefs.confirmDelete;
         if (typeof prefs.pwLength      !== 'undefined') {
             const slider = document.getElementById('pref-pw-length');
@@ -153,26 +150,39 @@ async function loadPrefs() {
     }
 }
 
-// ── Password Strength — 4-block scale ─────────────────────────
+
+// ── Password Strength — shared helper ────────────────────────
+function _calcStrengthScore(value) {
+    let score = 0;
+    if (value.length >= 8)           score++;
+    if (/[A-Z]/.test(value))         score++;
+    if (/[0-9]/.test(value))         score++;
+    if (/[^A-Za-z0-9]/.test(value))  score++;
+    return score;
+}
+
+// ── Password Strength — profile page (master password) ───────
 function setupPasswordStrength() {
-    const input  = document.getElementById('new-password');
-    const colors = ['', '#ff5f6d', '#f0a060', '#4f8ef7', '#c8f060'];
-    const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    const input   = document.getElementById('new-password');
+    const labelEl = document.getElementById('pw-strength-label');
 
     input.addEventListener('input', () => {
         const value = input.value;
-        let score = 0;
-        if (value.length >= 8)           score++;
-        if (/[A-Z]/.test(value))         score++;
-        if (/[0-9]/.test(value))         score++;
-        if (/[^A-Za-z0-9]/.test(value))  score++;
+        const score = _calcStrengthScore(value);
 
         for (let i = 1; i <= 4; i++) {
-            document.getElementById(`sb-${i}`).style.background = i <= score ? colors[score] : 'var(--border2)';
+            const bar = document.getElementById(`sb-${i}`);
+            if (bar) {
+                bar.style.background = i <= score
+                    ? STRENGTH_COLORS[score]
+                    : 'var(--kv-bg4)';
+            }
         }
-        const labelEl = document.getElementById('pw-strength-label');
-        labelEl.textContent = value.length ? (labels[score] || '') : '';
-        labelEl.style.color = colors[score] || 'var(--text3)';
+
+        if (labelEl) {
+            labelEl.textContent = value.length > 0 ? (STRENGTH_LABELS[score] || '') : '';
+            labelEl.style.color = value.length > 0 ? (STRENGTH_COLORS[score] || '') : '';
+        }
     });
 }
 
@@ -190,7 +200,7 @@ function setupAvatarColor() {
         new bootstrap.Modal(document.getElementById('avatarColorModal')).show();
     });
 
-    let selectedColor = '#c8f060';
+    let selectedColor = '#2060e8';
     document.querySelectorAll('#avatar-color-picker .color-swatch').forEach(swatch => {
         swatch.addEventListener('click', () => {
             document.querySelectorAll('#avatar-color-picker .color-swatch').forEach(s => s.classList.remove('active'));
@@ -270,8 +280,11 @@ function setupButtons() {
 
 // ── Save Account ──────────────────────────────────────────────
 async function handleSaveAccount() {
-    const username = document.getElementById('upd-username').value.trim();
-    if (!username) { showError('Username is required'); return; }
+    const newUsername = document.getElementById('upd-new-username').value.trim();
+    if (!newUsername) { showError('New username is required'); return; }
+
+    const currentUsername = document.getElementById('upd-current-username').value.trim();
+    if (newUsername === currentUsername) { showError('New username is the same as current username'); return; }
 
     const confirmed = await openConfirmModal({
         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -280,7 +293,7 @@ async function handleSaveAccount() {
                </svg>`,
         title: 'Update Username',
         lines: [
-            `You're about to change your username to <strong>${username}</strong>.`,
+            `You're about to change your username to <strong>${newUsername}</strong>.`,
             'This will update your display name across your vault.'
         ],
         confirmLabel: 'Yes, Update',
@@ -292,14 +305,28 @@ async function handleSaveAccount() {
         const res  = await fetch('/api/profile/update-account', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username })
+            body: JSON.stringify({ username: newUsername })
         });
         const data = await res.json();
         if (!res.ok) { showError(data.error); return; }
 
-        document.querySelector('.profile-name').textContent   = username;
-        document.querySelector('.user-name').textContent      = username;
-        document.getElementById('profile-avatar').textContent = username.charAt(0).toUpperCase();
+        document.getElementById('upd-current-username').value = newUsername;
+        document.getElementById('upd-new-username').value     = '';
+
+        const pfUsername = document.querySelector('.pf-username');
+        if (pfUsername) pfUsername.textContent = newUsername;
+
+        const userNameEl = document.querySelector('.user-name');
+        if (userNameEl) userNameEl.textContent = newUsername;
+
+        const profileAvatar = document.getElementById('profile-avatar');
+        if (profileAvatar) profileAvatar.textContent = newUsername.charAt(0).toUpperCase();
+
+        const userAvatar = document.querySelector('.user-avatar');
+        if (userAvatar) userAvatar.textContent = newUsername.charAt(0).toUpperCase();
+
+        const metaAccount = document.getElementById('meta-account');
+        if (metaAccount) metaAccount.textContent = newUsername;
 
         showToast('Username updated successfully', 'success');
     } catch (err) {
@@ -310,9 +337,6 @@ async function handleSaveAccount() {
 
 
 // ── Save Password ─────────────────────────────────────────────
-// Handles two cases:
-//   1. Existing password user — current_password required.
-//   2. Google user setting password for the first time — only new_password.
 async function handleSavePassword() {
     const current_password = document.getElementById('current-password').value;
     const new_password     = document.getElementById('new-password').value;
@@ -357,26 +381,24 @@ async function handleSavePassword() {
         const data = await res.json();
         if (!res.ok) { showError(data.error); return; }
 
-        // Clear all password fields
+        // Clear all password fields and reset strength meter
         document.getElementById('current-password').value = '';
         document.getElementById('new-password').value     = '';
         document.getElementById('confirm-password').value = '';
+
         for (let i = 1; i <= 4; i++) {
-            document.getElementById(`sb-${i}`).style.background = 'var(--border2)';
+            const bar = document.getElementById(`sb-${i}`);
+            if (bar) bar.style.background = 'var(--kv-bg4)';
         }
-        document.getElementById('pw-strength-label').textContent = '';
+        const labelEl = document.getElementById('pw-strength-label');
+        if (labelEl) { labelEl.textContent = ''; labelEl.style.color = ''; }
 
         _userHasPassword = true;
 
-        // Restore card to normal state
         const currentPwGroup = document.getElementById('current-password')?.closest('.field-group');
         if (currentPwGroup) currentPwGroup.style.display = '';
-        const sub = document.querySelector('#change-password-card .profile-card-sub');
-        if (sub) sub.textContent = 'Update your master password';
-        const title = document.querySelector('#change-password-card .profile-card-title');
-        if (title) title.textContent = 'Change Password';
         const btn = document.getElementById('btn-save-password');
-        if (btn) btn.textContent = 'Update Password';
+        if (btn) btn.textContent = 'Update password';
         const infoEl = document.getElementById('google-pw-notice');
         if (infoEl) infoEl.style.display = 'none';
 
@@ -385,7 +407,6 @@ async function handleSavePassword() {
             : 'Master password updated successfully';
         showToast(msg, 'success');
 
-        // If setting for the first time, unlock the vault in the session
         if (isSettingFirst) {
             try {
                 await fetch('/api/vault/unlock', {
@@ -405,13 +426,11 @@ async function handleSavePassword() {
 // ── Save Preferences ──────────────────────────────────────────
 async function handleSavePrefs() {
     const autolock      = document.getElementById('pref-autolock').checked;
-    const strength      = document.getElementById('pref-strength').checked;
     const confirmDelete = document.getElementById('pref-confirm-delete').checked;
     const pwLength      = document.getElementById('pref-pw-length').value;
 
     const summary = [
         `Auto-lock: <strong>${autolock ? 'On' : 'Off'}</strong>`,
-        `Show password strength: <strong>${strength ? 'On' : 'Off'}</strong>`,
         `Confirm before delete: <strong>${confirmDelete ? 'On' : 'Off'}</strong>`,
         `Generated password length: <strong>${pwLength} characters</strong>`
     ].join(' &nbsp;·&nbsp; ');
@@ -430,7 +449,7 @@ async function handleSavePrefs() {
 
     try {
         const key = await prefsKey();
-        localStorage.setItem(key, JSON.stringify({ autolock, strength, confirmDelete, pwLength }));
+        localStorage.setItem(key, JSON.stringify({ autolock, confirmDelete, pwLength }));
     } catch (_) {}
 
     showToast('Preferences saved', 'success');
@@ -462,7 +481,7 @@ async function handleExport() {
         const url  = URL.createObjectURL(blob);
         const a    = document.createElement('a');
         a.href     = url;
-        a.download = 'vaultkey-export.json';
+        a.download = 'keyvora-export.json';
         a.click();
         URL.revokeObjectURL(url);
         showToast('Vault exported successfully', 'success');
@@ -556,48 +575,51 @@ async function load2FAStatus() {
 }
 
 function render2FAStatus(enabled, backupCount, fetchFailed = false) {
-    const dot        = document.getElementById('2fa-status-dot');
     const badge      = document.getElementById('2fa-status-badge');
     const sub        = document.getElementById('2fa-security-sub');
     const enableBtn  = document.getElementById('btn-enable-2fa');
     const disableBtn = document.getElementById('btn-disable-2fa');
     const regenRow   = document.getElementById('2fa-regen-row');
     const backupSub  = document.getElementById('2fa-backup-sub');
+    const checkIcon  = document.getElementById('2fa-check-icon');
 
     if (fetchFailed) {
-        dot.className     = 'security-dot yellow';
-        badge.textContent = '—';
-        badge.className   = 'security-badge warn';
-        sub.textContent   = 'Could not load status';
-        enableBtn.classList.add('d-none');
-        disableBtn.classList.add('d-none');
-        regenRow.classList.add('d-none');
+        if (badge)     { badge.textContent = '—'; badge.className = 'sec-row-status off'; }
+        if (sub)       { sub.textContent = 'Could not load status — try refreshing'; }
+        if (checkIcon) { checkIcon.className = 'sec-check warn'; }
+        enableBtn?.classList.add('d-none');
+        disableBtn?.classList.add('d-none');
+        regenRow?.classList.add('d-none');
         return;
     }
 
     if (enabled) {
-        dot.className     = 'security-dot green';
-        badge.textContent = 'Enabled';
-        badge.className   = 'security-badge good';
-        sub.textContent   = 'Authenticator app active';
-        enableBtn.classList.add('d-none');
-        disableBtn.classList.remove('d-none');
-        regenRow.classList.remove('d-none');
+        if (checkIcon) {
+            checkIcon.className = 'sec-check';
+            checkIcon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+        }
+        if (badge) { badge.textContent = 'Enabled'; badge.className = 'sec-row-status on'; }
+        if (sub)   { sub.textContent = 'Authenticator app active — a code is required on every sign-in'; }
+        enableBtn?.classList.add('d-none');
+        disableBtn?.classList.remove('d-none');
+        regenRow?.classList.remove('d-none');
 
         if (backupSub) {
             backupSub.textContent = backupCount === 1
-                ? '1 backup code remaining'
+                ? '1 backup code remaining — regenerate soon'
                 : `${backupCount} backup codes remaining`;
-            backupSub.style.color = backupCount <= 2 ? '#f0a060' : '';
+            backupSub.style.color = backupCount <= 2 ? 'var(--kv-amber)' : '';
         }
     } else {
-        dot.className     = 'security-dot yellow';
-        badge.textContent = 'Off';
-        badge.className   = 'security-badge warn';
-        sub.textContent   = 'Not configured — your account is less secure';
-        enableBtn.classList.remove('d-none');
-        disableBtn.classList.add('d-none');
-        regenRow.classList.add('d-none');
+        if (checkIcon) {
+            checkIcon.className = 'sec-check warn';
+            checkIcon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+        }
+        if (badge) { badge.textContent = 'Not set up'; badge.className = 'sec-row-status off'; }
+        if (sub)   { sub.textContent = 'Add a second layer — require a code from your authenticator app on every sign-in'; }
+        enableBtn?.classList.remove('d-none');
+        disableBtn?.classList.add('d-none');
+        regenRow?.classList.add('d-none');
     }
 }
 
@@ -607,7 +629,6 @@ function render2FAStatus(enabled, backupCount, fetchFailed = false) {
 // ═════════════════════════════════════════════════════════════
 
 async function start2FASetup() {
-    // Google users must set a master password before enabling 2FA
     if (!_userHasPassword) {
         showError('Please set a master password before enabling two-factor authentication.');
         document.getElementById('change-password-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -625,25 +646,25 @@ async function start2FASetup() {
         if (!res.ok) {
             showToast(data.error || 'Failed to start 2FA setup', 'error');
             btn.disabled    = false;
-            btn.textContent = 'Enable';
+            btn.textContent = 'Set up';
             return;
         }
 
-        document.getElementById('totp-qr-container').innerHTML  = data.qr_svg;
+        document.getElementById('totp-qr-container').innerHTML     = data.qr_svg;
         document.getElementById('totp-secret-display').textContent = data.secret;
-        document.getElementById('totp-setup-code').value        = '';
+        document.getElementById('totp-setup-code').value           = '';
         document.getElementById('totp-setup-error').classList.add('d-none');
-        document.getElementById('totp-setup-error').textContent = '';
+        document.getElementById('totp-setup-error').textContent    = '';
 
         btn.disabled    = false;
-        btn.textContent = 'Enable';
+        btn.textContent = 'Set up';
 
         new bootstrap.Modal(document.getElementById('setup2FAModal')).show();
     } catch (err) {
         console.error(err);
         showToast('Failed to start 2FA setup', 'error');
         btn.disabled    = false;
-        btn.textContent = 'Enable';
+        btn.textContent = 'Set up';
     }
 }
 
@@ -723,7 +744,7 @@ function copyBackupCodes() {
     navigator.clipboard.writeText(codes).then(() => {
         const btn = document.getElementById('btn-copy-backup');
         btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = 'Copy All Codes'; }, 2000);
+        setTimeout(() => { btn.textContent = 'Copy all codes'; }, 2000);
     }).catch(() => { showToast('Failed to copy codes', 'error'); });
 }
 
@@ -759,7 +780,7 @@ async function disable2FA() {
         const data = await res.json();
 
         btn.disabled    = false;
-        btn.textContent = 'Yes, Disable 2FA';
+        btn.textContent = 'Yes, disable 2FA';
 
         if (!res.ok) {
             errorEl.textContent = data.error || 'Incorrect password.';
@@ -773,7 +794,7 @@ async function disable2FA() {
     } catch (err) {
         console.error(err);
         btn.disabled    = false;
-        btn.textContent = 'Yes, Disable 2FA';
+        btn.textContent = 'Yes, disable 2FA';
         errorEl.textContent = 'Something went wrong. Please try again.';
         errorEl.classList.remove('d-none');
     }
@@ -811,7 +832,7 @@ async function regenBackupCodes() {
         const data = await res.json();
 
         btn.disabled    = false;
-        btn.textContent = 'Yes, Regenerate';
+        btn.textContent = 'Yes, regenerate';
 
         if (!res.ok) {
             errorEl.textContent = data.error || 'Incorrect password.';
@@ -825,7 +846,7 @@ async function regenBackupCodes() {
     } catch (err) {
         console.error(err);
         btn.disabled    = false;
-        btn.textContent = 'Yes, Regenerate';
+        btn.textContent = 'Yes, regenerate';
         errorEl.textContent = 'Something went wrong. Please try again.';
         errorEl.classList.remove('d-none');
     }

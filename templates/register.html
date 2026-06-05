@@ -1,45 +1,54 @@
 {% extends "base.html" %}
-{% block title %}Create Account — VaultKey{% endblock %}
+{% block title %}Create Account — KeyVora{% endblock %}
 {% block content %}
 <div class="auth-root">
+
+  <!-- Brand -->
   <div class="auth-brand">
     <div class="brand-lockup">
       <div class="brand-icon">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <rect width="36" height="36" rx="10" fill="#c8f060"/>
-          <path d="M18 8C14.13 8 11 11.13 11 15c0 2.97 1.8 5.52 4.4 6.65V26h5.2v-4.35C23.2 20.52 25 17.97 25 15c0-3.87-3.13-7-7-7z" fill="#0a0a0a"/>
-          <circle cx="18" cy="15" r="2.5" fill="#c8f060"/>
+        <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="9" fill="#0a0f1e"/>
+          <path d="M18 7L9 11v7.5c0 5.25 3.8 10.15 9 11.5 5.2-1.35 9-6.25 9-11.5V11L18 7z" fill="#2060e8"/>
+          <circle cx="18" cy="17" r="3.2" fill="white"/>
+          <rect x="16.35" y="19.2" width="3.3" height="4.8" rx="0.8" fill="white"/>
         </svg>
       </div>
-      <span class="brand-name">VaultKey</span>
+      <span class="brand-name">KeyVora</span>
     </div>
-    <p class="brand-tagline">Secure your digital life, beautifully.</p>
+    <p class="brand-tagline">Secure your digital life, professionally.</p>
   </div>
 
+  <!-- Card -->
   <div class="auth-card">
     <div class="auth-card-header">
       <h1 class="auth-title">Create your vault</h1>
       <p class="auth-sub">Set up your account in seconds</p>
     </div>
 
-    <div id="auth-alert" class="auth-alert d-none"></div>
+    <div id="auth-alert"   class="auth-alert   d-none"></div>
     <div id="auth-success" class="auth-success d-none"></div>
 
     <form id="register-form" class="auth-form" autocomplete="off" novalidate>
       <div class="field-group">
         <label class="field-label">Username</label>
-        <input type="text" id="username" class="field-input" placeholder="yourname" autocomplete="off" required/>
+        <input type="text" id="username" class="field-input"
+               placeholder="yourname" autocomplete="off" required/>
       </div>
+
       <div class="field-group">
         <label class="field-label">Email Address</label>
-        <input type="email" id="email" class="field-input" placeholder="you@example.com" autocomplete="off" required/>
+        <input type="email" id="email" class="field-input"
+               placeholder="you@example.com" autocomplete="off" required/>
       </div>
+
       <div class="field-group">
         <label class="field-label">Master Password</label>
         <div class="password-wrap">
-          <input type="password" id="password" class="field-input" placeholder="Min. 8 characters" autocomplete="new-password" required/>
+          <input type="password" id="password" class="field-input"
+                 placeholder="Min. 8 characters" autocomplete="new-password" required/>
           <button type="button" class="toggle-pw" onclick="togglePassword('password')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
@@ -51,18 +60,21 @@
         <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
         <span class="strength-label" id="strength-label"></span>
       </div>
+
       <div class="field-group">
         <label class="field-label">Confirm Password</label>
         <div class="password-wrap">
-          <input type="password" id="confirm" class="field-input" placeholder="Repeat password" autocomplete="new-password" required/>
+          <input type="password" id="confirm" class="field-input"
+                 placeholder="Repeat password" autocomplete="new-password" required/>
           <button type="button" class="toggle-pw" onclick="togglePassword('confirm')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
         </div>
       </div>
+
       <button type="submit" class="btn-primary-full" id="register-btn">
         <span class="btn-text">Create Account</span>
         <span class="btn-loader d-none"></span>
@@ -71,56 +83,48 @@
 
     <p class="auth-switch">Already have an account? <a href="/login" class="auth-link">Sign in</a></p>
   </div>
+
 </div>
 
 <script>
-// ── Password strength meter ──────────────────────────────────
+// ── Password strength meter
 const pwInput = document.getElementById('password');
-
 pwInput.addEventListener('input', function () {
-  const val    = this.value;
-  const fill   = document.getElementById('strength-fill');
-  const label  = document.getElementById('strength-label');
+  const val   = this.value;
+  const fill  = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
   let score = 0;
   if (val.length >= 8)          score++;
   if (/[A-Z]/.test(val))        score++;
   if (/[0-9]/.test(val))        score++;
   if (/[^A-Za-z0-9]/.test(val)) score++;
   const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-  const colors = ['', '#e74c3c', '#f39c12', '#3498db', '#c8f060'];
+  const colors = ['', '#dc2626', '#d97706', '#1a4fcc', '#16a34a'];
   fill.style.width      = (score * 25) + '%';
   fill.style.background = colors[score];
   label.textContent     = levels[score] || '';
   label.style.color     = colors[score];
 });
 
-// ── Generate strong password ─────────────────────────────────
-document.getElementById('btn-generate-register')
-  .addEventListener('click', function () {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-    const array = new Uint32Array(16);
-    crypto.getRandomValues(array);
-    let pwd = '';
-    for (let i = 0; i < 16; i++) {
-      pwd += chars[array[i] % chars.length];
-    }
+// ── Generate strong password
+document.getElementById('btn-generate-register').addEventListener('click', function () {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  const array = new Uint32Array(16);
+  crypto.getRandomValues(array);
+  let pwd = '';
+  for (let i = 0; i < 16; i++) pwd += chars[array[i] % chars.length];
 
-    const pwField      = document.getElementById('password');
-    const confirmField = document.getElementById('confirm');
-    pwField.value      = pwd;
-    confirmField.value = pwd;
+  const pwField      = document.getElementById('password');
+  const confirmField = document.getElementById('confirm');
+  pwField.value      = pwd;
+  confirmField.value = pwd;
+  pwField.type       = 'text';
+  confirmField.type  = 'text';
+  setTimeout(() => { pwField.type = 'password'; confirmField.type = 'password'; }, 2000);
+  pwField.dispatchEvent(new Event('input'));
+});
 
-    pwField.type      = 'text';
-    confirmField.type = 'text';
-    setTimeout(() => {
-      pwField.type      = 'password';
-      confirmField.type = 'password';
-    }, 2000);
-
-    pwField.dispatchEvent(new Event('input'));
-  });
-
-// ── Register form submit ─────────────────────────────────────
+// ── Register submit
 document.getElementById('register-form').addEventListener('submit', async function (e) {
   e.preventDefault();
   const btn     = document.getElementById('register-btn');
@@ -140,9 +144,9 @@ document.getElementById('register-form').addEventListener('submit', async functi
   btn.querySelector('.btn-loader').classList.remove('d-none');
   alert.classList.add('d-none');
 
-  const res = await fetch('/api/register', {
+  const res  = await fetch('/api/register', {
     method:  'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({
       username: document.getElementById('username').value,
       email:    document.getElementById('email').value,
@@ -152,7 +156,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
   const data = await res.json();
 
   if (res.ok) {
-    success.textContent = 'Account created! Redirecting to login...';
+    success.textContent = 'Account created! Redirecting to sign in…';
     success.classList.remove('d-none');
     setTimeout(() => window.location.href = '/login', 1500);
   } else {

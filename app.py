@@ -61,7 +61,7 @@ if not app.config['SECRET_KEY']:
 # Falls back to SQLite for local development when DATABASE_URL is not set
 # ─────────────────────────────────────────────────────────────
 
-_db_url = os.getenv('DATABASE_URL', 'sqlite:///vaultkey.db')
+_db_url = os.getenv('DATABASE_URL', 'sqlite:///keyvora.db')
 if _db_url.startswith('postgres://'):
     # Render provides 'postgres://' but SQLAlchemy requires 'postgresql://'
     _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
@@ -600,7 +600,7 @@ def get_totp_uri(user: User) -> str:
     totp = pyotp.TOTP(user.totp_secret)
     return totp.provisioning_uri(
         name=user.email,
-        issuer_name='VaultKey'
+        issuer_name='KeyVora'
     )
 
 
@@ -1311,16 +1311,16 @@ def send_reset_otp():
 
     try:
         msg = Message(
-            subject    = 'VaultKey — Your Password Reset Code',
+            subject    = 'KeyVora — Your Password Reset Code',
             recipients = [email]
         )
         msg.body = (
             f"Hello {user.username},\n\n"
-            f"Your VaultKey one-time reset code is:\n\n"
+            f"Your KeyVora one-time reset code is:\n\n"
             f"  {otp}\n\n"
             f"This code expires in 10 minutes.\n\n"
             f"If you did not request a password reset, you can safely ignore this email.\n\n"
-            f"— The VaultKey Team"
+            f"— The KeyVora Team"
         )
         mail.send(msg)
         print(f"[OTP] Sent to {email}")

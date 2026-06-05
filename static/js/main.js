@@ -1,4 +1,4 @@
-// main.js — VaultKey shared utilities
+// main.js — KeyVora shared utilities
 // Loaded on every page via base.html
 
 // ── Password visibility toggle ───────────────────────────────
@@ -51,29 +51,22 @@ function toggleSidebar() {
 
 // ═════════════════════════════════════════════════════════════
 // Vault Lock System
-// ─────────────────────────────────────────────────────────────
-// The server returns HTTP 423 when a vault-protected endpoint is
-// called while the vault is locked. The frontend catches this,
-// shows an unlock prompt, and retries the action after success.
 // ═════════════════════════════════════════════════════════════
 
 let _vaultLockPoller    = null;
 let _vaultUnlockResolve = null;
 let _lockOverlayVisible = false;
-let _lockOverlayMode    = 'password'; // 'password' | 'set-password'
+let _lockOverlayMode    = 'password';
 
 const VAULT_POLL_INTERVAL = 30_000;
 
-// ── Start polling vault status ────────────────────────────────
 function startVaultLockPoller() {
     if (_vaultLockPoller) clearInterval(_vaultLockPoller);
-
     _vaultLockPoller = setInterval(async () => {
         try {
             const res  = await fetch('/api/vault/status');
             if (!res.ok) return;
             const data = await res.json();
-
             if (data.locked && !_lockOverlayVisible) {
                 _lockOverlayMode = data.has_password ? 'password' : 'set-password';
                 _showVaultLockOverlay(_lockOverlayMode);
@@ -82,7 +75,6 @@ function startVaultLockPoller() {
     }, VAULT_POLL_INTERVAL);
 }
 
-// ── Stop polling ──────────────────────────────────────────────
 function stopVaultLockPoller() {
     if (_vaultLockPoller) {
         clearInterval(_vaultLockPoller);
@@ -90,9 +82,6 @@ function stopVaultLockPoller() {
     }
 }
 
-// ── Show the lock overlay ─────────────────────────────────────
-// mode: 'password'     — existing master password prompt
-//       'set-password' — Google user who hasn't set a master password
 function _showVaultLockOverlay(mode) {
     if (_lockOverlayVisible) return;
     _lockOverlayVisible = true;
@@ -108,7 +97,7 @@ function _showVaultLockOverlay(mode) {
     overlay.style.cssText = [
         'position:fixed',
         'inset:0',
-        'background:rgba(10,12,16,0.93)',
+        'background:rgba(10,15,30,0.7)',
         'backdrop-filter:blur(6px)',
         '-webkit-backdrop-filter:blur(6px)',
         'z-index:99999',
@@ -127,82 +116,81 @@ function _showVaultLockOverlay(mode) {
 
     overlay.innerHTML = `
         <style>
-          @keyframes fadeInOverlay { from { opacity:0; } to { opacity:1; } }
+          @keyframes fadeInOverlay { from{opacity:0;}to{opacity:1;} }
           @keyframes lockCardSlide {
-            from { opacity:0; transform:translateY(18px) scale(0.97); }
-            to   { opacity:1; transform:translateY(0) scale(1); }
+            from{opacity:0;transform:translateY(18px) scale(0.97);}
+            to{opacity:1;transform:translateY(0) scale(1);}
           }
-          #vault-lock-card { animation: lockCardSlide 0.3s cubic-bezier(0.22,1,0.36,1); }
-          .vl-field-label {
-            font-size:0.8125rem; font-weight:600;
-            color:var(--text2); text-transform:uppercase;
-            letter-spacing:0.06em; display:block; margin-bottom:0.4rem;
+          #vault-lock-card{animation:lockCardSlide 0.3s cubic-bezier(0.22,1,0.36,1);}
+          .vl-field-label{
+            font-family:'Sora',sans-serif;
+            font-size:0.72rem;font-weight:700;
+            color:#374151;text-transform:uppercase;
+            letter-spacing:0.08em;display:block;margin-bottom:0.4rem;
           }
-          .vl-info-box {
-            display:flex; align-items:flex-start; gap:0.6rem;
-            background:rgba(79,142,247,0.08);
-            border:1px solid rgba(79,142,247,0.25);
-            border-radius:var(--radius-sm);
+          .vl-info-box{
+            display:flex;align-items:flex-start;gap:0.6rem;
+            background:rgba(26,79,204,0.07);
+            border:1px solid rgba(26,79,204,0.2);
+            border-radius:6px;
             padding:0.75rem 1rem;
-            font-size:0.8125rem; color:var(--text2); line-height:1.6;
+            font-size:0.8125rem;color:#374151;line-height:1.6;
             margin-bottom:1rem;
           }
-          .vl-info-box svg { flex-shrink:0; margin-top:2px; }
-          .vl-strength-bar {
-            display:flex; gap:4px; margin-top:0.5rem;
-          }
-          .vl-strength-block {
-            flex:1; height:4px; border-radius:2px;
-            background:var(--border2); transition:background 0.3s;
+          .vl-info-box svg{flex-shrink:0;margin-top:2px;}
+          .vl-strength-bar{display:flex;gap:4px;margin-top:0.5rem;}
+          .vl-strength-block{
+            flex:1;height:4px;border-radius:2px;
+            background:#e5e7eb;transition:background 0.3s;
           }
         </style>
 
         <div id="vault-lock-card"
-             style="background:var(--bg2);
-                    border:1px solid var(--border2);
-                    border-radius:var(--radius);
-                    padding:2.5rem 2rem;
-                    width:100%; max-width:400px;
-                    box-shadow:var(--shadow);">
+             style="background:#ffffff;
+                    border:1px solid #e5e7eb;
+                    border-radius:8px;
+                    padding:2.25rem 2rem;
+                    width:100%;max-width:400px;
+                    box-shadow:0 20px 60px rgba(10,15,30,0.25);">
 
-          <div style="width:64px;height:64px;border-radius:50%;
-                      background:var(--accent-dim);
-                      border:1px solid rgba(200,240,96,0.25);
-                      color:var(--accent);
+          <div style="width:58px;height:58px;border-radius:50%;
+                      background:#e8effe;border:1px solid #c5d8ff;
+                      color:#1a4fcc;
                       display:flex;align-items:center;justify-content:center;
-                      margin:0 auto 1.5rem;">
+                      margin:0 auto 1.4rem;">
             ${isSetPassword
-                ? `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                ? `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                      <line x1="12" y1="8" x2="12" y2="12"/>
                      <line x1="12" y1="16" x2="12.01" y2="16"/>
                    </svg>`
-                : `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                : `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                    </svg>`}
           </div>
 
-          <div style="text-align:center;margin-bottom:1.75rem;">
-            <h2 style="font-size:1.375rem;font-weight:700;color:var(--text);margin:0 0 0.35rem;">${headingText}</h2>
-            <p style="color:var(--text2);font-size:0.875rem;margin:0;line-height:1.6;">${subText}</p>
+          <div style="text-align:center;margin-bottom:1.5rem;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;color:#0a0f1e;
+                       margin:0 0 0.3rem;letter-spacing:-0.02em;">${headingText}</h2>
+            <p style="color:#6b7280;font-size:0.85rem;margin:0;line-height:1.65;">${subText}</p>
           </div>
 
           <div id="vault-lock-error"
-               style="display:none;background:var(--red-dim);
-                      border:1px solid rgba(255,95,109,0.3);
-                      color:var(--red);border-radius:var(--radius-sm);
-                      padding:0.6rem 0.9rem;font-size:0.8125rem;
+               style="display:none;background:rgba(220,38,38,0.07);
+                      border:1px solid rgba(220,38,38,0.2);
+                      color:#dc2626;border-radius:6px;
+                      padding:0.6rem 0.85rem;font-size:0.8125rem;
                       margin-bottom:1rem;"></div>
 
           ${isSetPassword ? `
           <div class="vl-info-box">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a4fcc" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="8" x2="12" y2="12"/>
               <line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
-            <span>This password encrypts your vault. It is separate from your Google account and <strong style="color:var(--text);">cannot be recovered</strong> if lost.</span>
+            <span>This password encrypts your vault. Separate from your Google account and <strong style="color:#0a0f1e;">cannot be recovered</strong> if lost.</span>
           </div>
           ` : ''}
 
@@ -220,7 +208,7 @@ function _showVaultLockOverlay(mode) {
               <button type="button" class="toggle-pw"
                       onclick="togglePassword('vault-unlock-password')"
                       style="position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
@@ -233,7 +221,7 @@ function _showVaultLockOverlay(mode) {
               <div class="vl-strength-block" id="vl-sb-3"></div>
               <div class="vl-strength-block" id="vl-sb-4"></div>
             </div>
-            <span id="vl-strength-label" style="font-size:0.75rem;font-family:var(--mono);display:block;margin-top:0.2rem;"></span>
+            <span id="vl-strength-label" style="font-size:0.72rem;font-family:'DM Mono',monospace;display:block;margin-top:0.2rem;"></span>
             ` : ''}
           </div>
 
@@ -250,7 +238,7 @@ function _showVaultLockOverlay(mode) {
               <button type="button" class="toggle-pw"
                       onclick="togglePassword('vault-unlock-confirm')"
                       style="position:absolute;right:0.7rem;top:50%;transform:translateY(-50%);">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
@@ -267,10 +255,10 @@ function _showVaultLockOverlay(mode) {
             <span class="btn-loader d-none"></span>
           </button>
 
-          <p style="text-align:center;margin-top:1.25rem;font-size:0.8125rem;color:var(--text3);">
+          <p style="text-align:center;margin-top:1.1rem;font-size:0.8rem;color:#9ca3af;">
             ${isSetPassword
-                ? `Want to do this later? <a href="/logout" style="color:var(--accent);text-decoration:none;font-weight:600;">Sign out</a>`
-                : `Not you? <a href="/logout" style="color:var(--accent);text-decoration:none;font-weight:600;">Sign out</a>`}
+                ? `Want to do this later? <a href="/logout" style="color:#1a4fcc;text-decoration:none;font-weight:600;">Sign out</a>`
+                : `Not you? <a href="/logout" style="color:#1a4fcc;text-decoration:none;font-weight:600;">Sign out</a>`}
           </p>
         </div>
     `;
@@ -282,9 +270,8 @@ function _showVaultLockOverlay(mode) {
 
     pwInput.focus();
 
-    // Strength meter for set-password mode
     if (isSetPassword) {
-        const colors = ['', '#ff5f6d', '#f0a060', '#4f8ef7', '#c8f060'];
+        const colors = ['', '#dc2626', '#d97706', '#1a4fcc', '#16a34a'];
         const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
         pwInput.addEventListener('input', function () {
             const val = this.value;
@@ -295,17 +282,16 @@ function _showVaultLockOverlay(mode) {
             if (/[^A-Za-z0-9]/.test(val))  score++;
             for (let i = 1; i <= 4; i++) {
                 const block = document.getElementById(`vl-sb-${i}`);
-                if (block) block.style.background = i <= score ? colors[score] : 'var(--border2)';
+                if (block) block.style.background = i <= score ? colors[score] : '#e5e7eb';
             }
             const lbl = document.getElementById('vl-strength-label');
             if (lbl) {
                 lbl.textContent = val.length ? (labels[score] || '') : '';
-                lbl.style.color = colors[score] || 'var(--text3)';
+                lbl.style.color = colors[score] || '#9ca3af';
             }
         });
     }
 
-    // Enter key handling
     pwInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             if (isSetPassword && confirmInput) confirmInput.focus();
@@ -319,7 +305,6 @@ function _showVaultLockOverlay(mode) {
     }
 }
 
-// ── Overlay submit handler ────────────────────────────────────
 async function vaultUnlockSubmit() {
     const password  = document.getElementById('vault-unlock-password').value;
     const confirmEl = document.getElementById('vault-unlock-confirm');
@@ -355,8 +340,6 @@ async function vaultUnlockSubmit() {
     errEl.style.display = 'none';
 
     try {
-        // Google users setting password first time → change-password endpoint
-        // Existing users → unlock endpoint directly
         const endpoint = isSetPw ? '/api/profile/change-password' : '/api/vault/unlock';
         const body     = isSetPw ? { new_password: password } : { password };
 
@@ -368,7 +351,6 @@ async function vaultUnlockSubmit() {
         const data = await res.json();
 
         if (res.ok) {
-            // After Google user sets password, also unlock the vault in session
             if (isSetPw) {
                 await fetch('/api/vault/unlock', {
                     method:  'POST',
@@ -394,7 +376,6 @@ async function vaultUnlockSubmit() {
             if (textEl)   textEl.classList.remove('d-none');
             if (loaderEl) loaderEl.classList.add('d-none');
 
-            // Server says this account needs a password set, not unlocked
             if (data.needs_password && !isSetPw) {
                 _dismissLockOverlay();
                 _lockOverlayVisible = false;
@@ -419,7 +400,6 @@ async function vaultUnlockSubmit() {
     }
 }
 
-// ── Remove the overlay ────────────────────────────────────────
 function _dismissLockOverlay() {
     const overlay = document.getElementById('vault-lock-overlay');
     if (overlay) {
@@ -430,8 +410,6 @@ function _dismissLockOverlay() {
     _lockOverlayVisible = false;
 }
 
-// ── Promise-based unlock gate ─────────────────────────────────
-// Resolves true once unlocked, or false if user navigates away.
 async function waitForVaultUnlock() {
     let mode = 'password';
     try {
@@ -446,20 +424,16 @@ async function waitForVaultUnlock() {
     });
 }
 
-// ── Fetch wrapper: intercepts 423 and shows unlock prompt ─────
 async function fetchWithVaultGate(url, options = {}) {
     let res = await fetch(url, options);
-
     if (res.status === 423) {
         const unlocked = await waitForVaultUnlock();
         if (!unlocked) return res;
         res = await fetch(url, options);
     }
-
     return res;
 }
 
-// ── Manual lock ───────────────────────────────────────────────
 async function lockVaultManually() {
     try {
         await fetch('/api/vault/lock', { method: 'POST' });

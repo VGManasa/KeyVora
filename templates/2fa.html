@@ -1,55 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Two-Factor Authentication — VaultKey{% endblock %}
+{% block title %}Two-Factor Authentication — KeyVora{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/2fa.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="auth-root">
 
-  <!-- ── Brand ─────────────────────────────────────────────── -->
+  <!-- Brand -->
   <div class="auth-brand">
     <div class="brand-lockup">
       <div class="brand-icon">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <rect width="36" height="36" rx="10" fill="#c8f060"/>
-          <path d="M18 8C14.13 8 11 11.13 11 15c0 2.97 1.8 5.52 4.4 6.65V26h5.2v-4.35C23.2 20.52 25 17.97 25 15c0-3.87-3.13-7-7-7z" fill="#0a0a0a"/>
-          <circle cx="18" cy="15" r="2.5" fill="#c8f060"/>
+        <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="9" fill="#0a0f1e"/>
+          <path d="M18 7L9 11v7.5c0 5.25 3.8 10.15 9 11.5 5.2-1.35 9-6.25 9-11.5V11L18 7z" fill="#2060e8"/>
+          <circle cx="18" cy="17" r="3.2" fill="white"/>
+          <rect x="16.35" y="19.2" width="3.3" height="4.8" rx="0.8" fill="white"/>
         </svg>
       </div>
-      <span class="brand-name">VaultKey</span>
+      <span class="brand-name">KeyVora</span>
     </div>
-    <p class="brand-tagline">Almost there — verify your identity.</p>
+    <p class="brand-tagline">Verify your identity to continue.</p>
   </div>
 
-  <!-- ── Auth Card ─────────────────────────────────────────── -->
+  <!-- Card -->
   <div class="auth-card">
-
-    <!-- Header -->
-    <div class="tfa-card-header">
-      <div class="tfa-shield-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.5">
+    <div class="auth-card-header">
+      <div class="tfa-shield-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <polyline points="9 12 11 14 15 10"/>
         </svg>
       </div>
-      <h1 class="auth-title">Two-Factor Auth</h1>
-      <p class="auth-sub">Enter the 6-digit code from your authenticator app</p>
+      <h1 class="auth-title" id="tfa-title">Two-Factor Auth</h1>
+      <p class="auth-sub" id="tfa-sub">Enter the 6-digit code from your authenticator app</p>
     </div>
 
-    <!-- Alerts -->
     <div id="auth-alert"   class="auth-alert   d-none"></div>
     <div id="auth-success" class="auth-success d-none"></div>
 
-    <!-- ── TOTP Section ───────────────────────────────────── -->
-    <div id="totp-section" class="auth-form tfa-section">
+    <!-- TOTP Section -->
+    <div id="totp-section" class="auth-form">
 
       <div class="field-group">
-        <label class="field-label" style="text-align:center;display:block;">
-          Authentication Code
-        </label>
+        <label class="field-label">Authentication Code</label>
         <input
           type="text"
           id="totp-code"
@@ -60,9 +56,7 @@
           placeholder="000 000"
           autofocus
         />
-        <span class="tfa-helper">
-          Open your authenticator app and enter the current code
-        </span>
+        <span class="field-hint">Open your authenticator app and enter the current 6-digit code</span>
       </div>
 
       <button type="button" class="btn-primary-full" id="btn-verify-totp">
@@ -72,22 +66,22 @@
 
     </div>
 
-    <!-- ── Divider + backup link (shown in TOTP view) ─────── -->
+    <!-- Divider + backup toggle -->
     <div id="totp-footer">
-      <div class="tfa-divider">
-        <div class="tfa-divider-line"></div>
-        <span class="tfa-divider-text">lost your device?</span>
-        <div class="tfa-divider-line"></div>
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <span class="auth-divider-text">lost your device?</span>
+        <div class="auth-divider-line"></div>
       </div>
       <div style="text-align:center;">
-        <button type="button" class="tfa-toggle-btn" id="btn-use-backup">
+        <button type="button" class="auth-link-btn" id="btn-use-backup">
           Use a backup code instead
         </button>
       </div>
     </div>
 
-    <!-- ── Backup Code Section (hidden initially) ─────────── -->
-    <div id="backup-section" class="auth-form" style="display:none;">
+    <!-- Backup Code Section -->
+    <div id="backup-section" style="display:none;" class="auth-form">
 
       <div class="field-group">
         <label class="field-label">Backup Code</label>
@@ -100,9 +94,7 @@
           autocomplete="off"
           spellcheck="false"
         />
-        <span class="tfa-helper-left">
-          Enter one of your saved backup codes. Each code can only be used once.
-        </span>
+        <span class="field-hint">Enter one of your saved backup codes. Each code can only be used once.</span>
       </div>
 
       <button type="button" class="btn-primary-full" id="btn-verify-backup">
@@ -110,18 +102,17 @@
         <span class="btn-loader d-none"></span>
       </button>
 
-      <button type="button" class="tfa-toggle-btn" id="btn-back-to-totp">
+      <button type="button" class="auth-link-btn" id="btn-back-to-totp">
         ← Back to authenticator code
       </button>
 
     </div>
 
-    <!-- Back to sign in -->
-    <p class="tfa-back-link">
-      <a href="/login">← Back to sign in</a>
+    <p class="auth-switch" style="margin-top:1.25rem;">
+      <a href="/login" class="auth-link">← Back to sign in</a>
     </p>
-
   </div>
+
 </div>
 {% endblock %}
 

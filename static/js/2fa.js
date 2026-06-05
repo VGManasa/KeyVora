@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// 2fa.js — VaultKey 2FA verification page
+// 2fa.js — KeyVora 2FA verification page
 // Handles TOTP verify, backup code verify, and section toggling.
 // No master_password is ever stored or sent — the server uses
 // the pre-derived vault key stashed during the login attempt.
@@ -84,14 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (totpSection)  { totpSection.style.display  = 'none'; }
             if (totpFooter)   { totpFooter.style.display   = 'none'; }
             if (backupSection) {
-                backupSection.style.display = 'block';
+                backupSection.style.display = 'flex';
                 backupSection.classList.add('tfa-section');
             }
             if (backupInput) backupInput.focus();
         } else {
             if (backupSection) { backupSection.style.display = 'none'; }
             if (totpSection) {
-                totpSection.style.display = 'block';
+                totpSection.style.display = 'flex';
                 totpSection.classList.add('tfa-section');
             }
             if (totpFooter) { totpFooter.style.display = 'block'; }

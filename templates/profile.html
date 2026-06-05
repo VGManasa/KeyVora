@@ -4,25 +4,398 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_styles.css') }}">
 {% endblock %}
 
-{% block title %}Profile — VaultKey{% endblock %}
+{% block title %}Profile — KeyVora{% endblock %}
+
 {% block content %}
+
+<script>
+(function(){
+  const saved = localStorage.getItem('kv_theme');
+  if (saved === 'light') document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.setAttribute('data-theme','dark');
+})();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root,
+[data-theme="dark"] {
+  --kv-bg:            #0a0f1e;
+  --kv-bg2:           #111827;
+  --kv-bg3:           #1a2236;
+  --kv-bg4:           #1e2d4a;
+  --kv-surface:       #111827;
+  --kv-surface2:      #1a2236;
+  --kv-border:        rgba(255,255,255,0.07);
+  --kv-border2:       rgba(255,255,255,0.12);
+  --kv-text:          #e2e8f0;
+  --kv-text2:         #94a3b8;
+  --kv-text3:         #475569;
+  --kv-text4:         #334155;
+  --kv-blue:          #2060e8;
+  --kv-blue2:         #3b82f6;
+  --kv-blue-dim:      rgba(32,96,232,0.15);
+  --kv-blue-border:   rgba(32,96,232,0.3);
+  --kv-accent:        #6fa8f7;
+  --kv-red:           #f87171;
+  --kv-red-dim:       rgba(248,113,113,0.1);
+  --kv-red-border:    rgba(248,113,113,0.25);
+  --kv-green:         #4ade80;
+  --kv-green-dim:     rgba(74,222,128,0.1);
+  --kv-amber:         #fbbf24;
+  --kv-amber-dim:     rgba(251,191,36,0.1);
+  --kv-amber-border:  rgba(251,191,36,0.25);
+  --kv-shadow:        0 20px 60px rgba(0,0,0,0.5);
+  --kv-shadow-sm:     0 4px 20px rgba(0,0,0,0.3);
+  --kv-r:             8px;
+  --kv-r-sm:          6px;
+  --kv-r-lg:          12px;
+  --kv-sidebar-w:     268px;
+  --kv-topbar-h:      62px;
+  --kv-font:          'Sora', sans-serif;
+  --kv-body:          'Inter', sans-serif;
+  --kv-mono:          'DM Mono', monospace;
+  --kv-nav-active-bg:   rgba(32,96,232,0.18);
+  --kv-nav-active-text: #6fa8f7;
+  --kv-nav-hover-bg:    rgba(255,255,255,0.05);
+}
+
+[data-theme="light"] {
+  --kv-bg:            #f1f5f9;
+  --kv-bg2:           #ffffff;
+  --kv-bg3:           #f8fafc;
+  --kv-bg4:           #e2e8f0;
+  --kv-surface:       #ffffff;
+  --kv-surface2:      #f8fafc;
+  --kv-border:        rgba(0,0,0,0.07);
+  --kv-border2:       rgba(0,0,0,0.12);
+  --kv-text:          #0a0f1e;
+  --kv-text2:         #374151;
+  --kv-text3:         #6b7280;
+  --kv-text4:         #9ca3af;
+  --kv-blue:          #1a4fcc;
+  --kv-blue2:         #2060e8;
+  --kv-blue-dim:      rgba(26,79,204,0.08);
+  --kv-blue-border:   rgba(26,79,204,0.2);
+  --kv-accent:        #1a4fcc;
+  --kv-red:           #dc2626;
+  --kv-red-dim:       rgba(220,38,38,0.07);
+  --kv-red-border:    rgba(220,38,38,0.2);
+  --kv-green:         #16a34a;
+  --kv-green-dim:     rgba(22,163,74,0.08);
+  --kv-amber:         #d97706;
+  --kv-amber-dim:     rgba(217,119,6,0.08);
+  --kv-amber-border:  rgba(217,119,6,0.25);
+  --kv-shadow:        0 20px 60px rgba(0,0,0,0.12);
+  --kv-shadow-sm:     0 4px 20px rgba(0,0,0,0.06);
+  --kv-nav-active-bg:   rgba(26,79,204,0.1);
+  --kv-nav-active-text: #1a4fcc;
+  --kv-nav-hover-bg:    rgba(0,0,0,0.04);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body {
+  height:100%; font-family:var(--kv-body); font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; background:var(--kv-bg); color:var(--kv-text);
+  transition:background 0.3s, color 0.3s;
+}
+button,input,textarea,select { font-family:inherit; transition:background 0.2s,border-color 0.2s,color 0.2s,box-shadow 0.2s; }
+a { text-decoration:none; color:inherit; }
+
+.app-shell { display:flex; min-height:100vh; }
+
+.sidebar {
+  width:var(--kv-sidebar-w); background:var(--kv-bg); border-right:1px solid var(--kv-border);
+  display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100;
+  transition:transform 0.3s cubic-bezier(0.22,1,0.36,1), background 0.3s;
+}
+.sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:1.1rem 1.25rem; border-bottom:1px solid var(--kv-border); flex-shrink:0; }
+.brand-lockup { display:flex; align-items:center; gap:0.6rem; }
+.brand-icon { width:34px; height:34px; border-radius:8px; background:#0a0f1e; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.brand-name { font-family:var(--kv-font); font-size:1.05rem; font-weight:700; color:var(--kv-text); letter-spacing:-0.01em; }
+.sidebar-close { display:none; background:none; border:none; color:var(--kv-text3); cursor:pointer; padding:4px; border-radius:6px; line-height:0; transition:color 0.2s,background 0.2s; }
+.sidebar-close:hover { color:var(--kv-text); background:var(--kv-nav-hover-bg); }
+
+.sidebar-search { padding:0.85rem 1.1rem; border-bottom:1px solid var(--kv-border); flex-shrink:0; }
+.search-wrap { position:relative; display:flex; align-items:center; }
+.search-icon { position:absolute; left:0.7rem; color:var(--kv-text3); pointer-events:none; }
+.search-input { width:100%; background:var(--kv-surface2); border:1px solid var(--kv-border2); border-radius:var(--kv-r-sm); color:var(--kv-text); font-size:0.845rem; padding:0.48rem 0.75rem 0.48rem 2.2rem; outline:none; cursor:pointer; transition:border-color 0.2s; }
+.search-input::placeholder { color:var(--kv-text3); }
+
+.sidebar-section-label { padding:0.7rem 1.2rem 0.3rem; font-family:var(--kv-font); font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.13em; color:var(--kv-text3); flex-shrink:0; }
+.sidebar-nav { padding:0.25rem 0.65rem; flex-shrink:0; }
+.nav-item { display:flex; align-items:center; gap:0.55rem; padding:0.48rem 0.7rem; border-radius:var(--kv-r-sm); cursor:pointer; font-size:0.83rem; color:var(--kv-text2); transition:background 0.15s, color 0.15s; margin-bottom:1px; text-decoration:none; }
+.nav-item:hover { background:var(--kv-nav-hover-bg); color:var(--kv-text); }
+.nav-item.active { background:var(--kv-nav-active-bg); color:var(--kv-nav-active-text); font-weight:600; }
+.nav-label { font-family:var(--kv-font); }
+
+.sidebar-footer { margin-top:auto; border-top:1px solid var(--kv-border); padding:0.85rem 1.1rem; display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.acct-switcher-wrap { position:relative; flex:1; min-width:0; }
+.user-chip { display:flex; align-items:center; gap:0.6rem; flex:1; min-width:0; cursor:pointer; }
+.user-avatar { width:31px; height:31px; border-radius:50%; background:var(--kv-blue); color:#fff; font-weight:700; font-family:var(--kv-font); font-size:0.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.user-info { display:flex; flex-direction:column; min-width:0; }
+.user-name { font-family:var(--kv-font); font-size:0.8rem; font-weight:600; color:var(--kv-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-role { font-size:0.67rem; color:var(--kv-text3); }
+.btn-logout { background:none; border:none; color:var(--kv-text3); cursor:pointer; padding:5px; border-radius:6px; line-height:0; transition:color 0.2s, background 0.2s; flex-shrink:0; }
+.btn-logout:hover { color:var(--kv-red); background:var(--kv-red-dim); }
+
+.topbar { height:var(--kv-topbar-h); background:var(--kv-surface); border-bottom:1px solid var(--kv-border); display:flex; align-items:center; gap:0.85rem; padding:0 1.75rem; position:sticky; top:0; z-index:50; transition:background 0.3s, border-color 0.3s; flex-shrink:0; }
+.topbar-menu { display:none; background:none; border:none; color:var(--kv-text2); cursor:pointer; padding:4px; border-radius:6px; line-height:0; }
+.topbar-title { font-family:var(--kv-font); font-size:0.92rem; font-weight:700; color:var(--kv-text); flex:1; letter-spacing:-0.01em; }
+.kv-theme-toggle { width:34px; height:34px; border-radius:var(--kv-r-sm); background:none; border:1px solid var(--kv-border2); color:var(--kv-text2); cursor:pointer; line-height:0; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s, background 0.2s, color 0.2s; }
+.kv-theme-toggle:hover { border-color:var(--kv-blue-border); background:var(--kv-blue-dim); color:var(--kv-accent); }
+[data-theme="dark"]  .kv-ico-sun  { display:none; }
+[data-theme="dark"]  .kv-ico-moon { display:block; }
+[data-theme="light"] .kv-ico-sun  { display:block; }
+[data-theme="light"] .kv-ico-moon { display:none; }
+
+.main-content { margin-left:var(--kv-sidebar-w); flex:1; min-height:100vh; background:var(--kv-bg); display:flex; flex-direction:column; transition:background 0.3s; }
+.pf-content { padding:2rem 2rem 3rem; max-width:860px; }
+
+.auth-alert { background:var(--kv-red-dim); border:1px solid var(--kv-red-border); color:var(--kv-red); border-radius:var(--kv-r-sm); padding:0.65rem 1rem; font-size:0.85rem; }
+.auth-success { background:var(--kv-green-dim); border:1px solid rgba(74,222,128,0.3); color:var(--kv-green); border-radius:var(--kv-r-sm); padding:0.65rem 1rem; font-size:0.85rem; }
+.d-none { display:none !important; }
+.d-lg-none { display:none; }
+
+.pf-hero { position:relative; background:#0a0f1e; border-radius:var(--kv-r-lg); overflow:hidden; margin-bottom:1.75rem; border:1px solid var(--kv-border); }
+.pf-hero-mesh { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 80% 60% at 60% 50%, rgba(32,96,232,0.4) 0%, transparent 65%), radial-gradient(ellipse 40% 50% at 90% 80%, rgba(8,145,178,0.15) 0%, transparent 60%); }
+.pf-hero-inner { position:relative; z-index:1; padding:1.75rem 2rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+.pf-avatar-wrap { position:relative; flex-shrink:0; }
+.pf-avatar { width:62px; height:62px; border-radius:50%; background:var(--kv-blue); border:2.5px solid rgba(255,255,255,0.2); color:white; font-weight:800; font-size:1.5rem; font-family:var(--kv-font); display:flex; align-items:center; justify-content:center; text-transform:uppercase; }
+.pf-avatar-edit { position:absolute; bottom:1px; right:1px; width:21px; height:21px; border-radius:50%; background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.3); color:rgba(255,255,255,0.7); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s, color 0.2s; }
+.pf-avatar-edit:hover { background:rgba(255,255,255,0.25); color:white; }
+.pf-hero-text { flex:1; min-width:0; }
+.pf-username { font-family:var(--kv-font); font-size:1.35rem; font-weight:800; color:white; letter-spacing:-0.025em; margin:0 0 0.2rem; }
+.pf-email { font-size:0.78rem; color:rgba(255,255,255,0.4); font-family:var(--kv-mono); margin:0 0 0.55rem; }
+.pf-badge { display:inline-flex; align-items:center; gap:0.35rem; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.65); font-family:var(--kv-font); font-size:0.6rem; font-weight:700; padding:0.18rem 0.6rem; border-radius:20px; text-transform:uppercase; letter-spacing:0.1em; }
+.pf-hero-stats { display:flex; align-items:center; gap:1.75rem; border-left:1px solid rgba(255,255,255,0.1); padding-left:1.75rem; flex-shrink:0; }
+.pf-stat { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+.pf-stat-val { font-family:var(--kv-font); font-size:1.5rem; font-weight:800; color:white; letter-spacing:-0.03em; line-height:1; }
+.pf-stat-lbl { font-family:var(--kv-font); font-size:0.58rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.35); }
+.pf-stat-div { width:1px; height:28px; background:rgba(255,255,255,0.1); }
+
+.pf-group-label { font-family:var(--kv-font); font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.13em; color:var(--kv-text3); margin:1.4rem 0 0.5rem 2px; }
+.pf-group-label:first-of-type { margin-top:0; }
+.pf-group-label.danger-label { color:var(--kv-red); opacity:0.75; }
+
+.pf-sections { display:flex; flex-direction:column; gap:0; }
+.pf-section { background:var(--kv-surface); border:1px solid var(--kv-border); border-radius:var(--kv-r-lg); overflow:hidden; margin-bottom:6px; transition:border-color 0.25s, box-shadow 0.25s; }
+.pf-section:hover { border-color:var(--kv-blue-border); }
+.pf-section.open { border-color:var(--kv-blue-border); box-shadow:0 4px 20px rgba(32,96,232,0.1); }
+.pf-section-danger { border-top:2px solid var(--kv-red) !important; }
+.pf-section-danger:hover { border-color:var(--kv-red-border); }
+.pf-section-danger.open { border-color:var(--kv-red-border); box-shadow:0 4px 20px rgba(248,113,113,0.1); }
+
+.pf-section-trigger { width:100%; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.25rem; text-align:left; transition:background 0.15s; }
+.pf-section-trigger:hover { background:var(--kv-nav-hover-bg); }
+.pf-section.open .pf-section-trigger { background:var(--kv-nav-hover-bg); border-bottom:1px solid var(--kv-border); }
+
+.pf-section-left { display:flex; align-items:center; gap:0.8rem; flex:1; min-width:0; }
+.pf-section-icon { width:34px; height:34px; border-radius:var(--kv-r-sm); background:var(--kv-blue-dim); border:1px solid var(--kv-blue-border); display:flex; align-items:center; justify-content:center; color:var(--kv-accent); flex-shrink:0; transition:background 0.2s; }
+.pf-section.open .pf-section-icon { background:rgba(32,96,232,0.25); }
+.pf-section-icon-danger { background:var(--kv-red-dim) !important; border-color:var(--kv-red-border) !important; color:var(--kv-red) !important; }
+.pf-section.open .pf-section-icon-danger { background:rgba(248,113,113,0.18) !important; }
+
+.pf-section-info { display:flex; flex-direction:column; gap:0.1rem; min-width:0; }
+.pf-section-title { font-family:var(--kv-font); font-size:0.87rem; font-weight:700; color:var(--kv-text); }
+.pf-section-desc { font-size:0.74rem; color:var(--kv-text3); }
+.pf-section-right { display:flex; align-items:center; gap:0.65rem; flex-shrink:0; }
+.pf-section-meta { font-size:0.75rem; font-family:var(--kv-mono); color:var(--kv-text3); }
+.pf-chevron { color:var(--kv-text3); flex-shrink:0; transition:transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+.pf-section.open .pf-chevron { transform:rotate(180deg); }
+
+.pf-section-body { max-height:0; overflow:hidden; transition:max-height 0.42s cubic-bezier(0.22,1,0.36,1); }
+.pf-section.open .pf-section-body { max-height:900px; }
+.pf-section-inner { padding:1.25rem 1.4rem; }
+.pf-section-footer { display:flex; justify-content:flex-end; margin-top:1rem; }
+
+.pf-field-row { display:flex; gap:1rem; flex-wrap:wrap; }
+.pf-field-row > .field-group { min-width:160px; flex:1; }
+.field-group { display:flex; flex-direction:column; gap:0.4rem; }
+.field-label { font-family:var(--kv-font); font-size:0.7rem; font-weight:700; color:var(--kv-text2); text-transform:uppercase; letter-spacing:0.08em; display:flex; align-items:center; gap:0.5rem; }
+.field-input { background:var(--kv-surface2); border:1.5px solid var(--kv-border2); border-radius:var(--kv-r-sm); color:var(--kv-text); font-size:0.875rem; padding:0.55rem 0.85rem; outline:none; width:100%; transition:border-color 0.2s, box-shadow 0.2s; }
+.field-input:focus { border-color:var(--kv-blue); box-shadow:0 0 0 3px var(--kv-blue-dim); }
+.field-input::placeholder { color:var(--kv-text3); }
+.field-input:disabled { opacity:0.4; cursor:not-allowed; }
+.field-input[readonly] { opacity:0.6; cursor:default; }
+.field-input[readonly]:focus { border-color:var(--kv-border2); box-shadow:none; }
+.pf-locked-badge { font-size:0.64rem; font-weight:600; background:var(--kv-bg3); border:1px solid var(--kv-border2); color:var(--kv-text3); padding:0.06rem 0.45rem; border-radius:20px; text-transform:none; letter-spacing:0; }
+.password-wrap { position:relative; }
+.password-wrap .field-input { padding-right:2.8rem; }
+.toggle-pw { position:absolute; right:0.7rem; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--kv-text3); cursor:pointer; padding:0; line-height:0; transition:color 0.2s; }
+.toggle-pw:hover { color:var(--kv-accent); }
+
+.btn-cancel { background:none; border:1.5px solid var(--kv-border2); border-radius:var(--kv-r-sm); color:var(--kv-text2); font-family:var(--kv-font); font-size:0.83rem; font-weight:600; padding:0.5rem 1rem; cursor:pointer; transition:border-color 0.15s, background 0.15s, color 0.15s; display:inline-flex; align-items:center; gap:0.4rem; }
+.btn-cancel:hover { background:var(--kv-nav-hover-bg); border-color:var(--kv-border2); color:var(--kv-text); }
+.btn-confirm { background:var(--kv-blue); border:1.5px solid var(--kv-blue); border-radius:var(--kv-r-sm); color:#fff; font-family:var(--kv-font); font-size:0.83rem; font-weight:700; padding:0.5rem 1.2rem; cursor:pointer; transition:background 0.15s, box-shadow 0.15s; }
+.btn-confirm:hover { background:var(--kv-blue2); box-shadow:0 4px 12px rgba(32,96,232,0.3); }
+.btn-danger { background:var(--kv-red); border:none; border-radius:var(--kv-r-sm); color:#fff; font-family:var(--kv-font); font-size:0.83rem; font-weight:700; padding:0.5rem 1.2rem; cursor:pointer; transition:opacity 0.15s; }
+.btn-danger:hover { opacity:0.85; }
+
+/* ── Strength bars: Weak=#dc2626 Fair=#d97706 Good=#1a4fcc Strong=#16a34a ── */
+.pf-strength-bar { flex:1; height:3px; border-radius:3px; background:var(--kv-bg4); transition:background 0.3s; }
+
+.sec-table { display:flex; flex-direction:column; }
+.sec-row { display:flex; align-items:center; justify-content:space-between; gap:1.25rem; padding:0.9rem 0; border-bottom:1px solid var(--kv-border); }
+.sec-row:last-child { border-bottom:none; }
+.sec-row-left { display:flex; align-items:flex-start; gap:0.75rem; flex:1; min-width:0; }
+.sec-check { width:19px; height:19px; border-radius:50%; background:var(--kv-text); color:var(--kv-bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+[data-theme="dark"] .sec-check { background:#e2e8f0; color:#0a0f1e; }
+.sec-check.warn { background:var(--kv-bg4); color:var(--kv-text3); }
+.sec-row-text { display:flex; flex-direction:column; gap:0.15rem; min-width:0; }
+.sec-row-name { font-family:var(--kv-font); font-size:0.85rem; font-weight:700; color:var(--kv-text); }
+.sec-row-detail { font-family:var(--kv-body); font-size:0.76rem; color:var(--kv-text3); line-height:1.55; }
+.sec-row-status { font-family:var(--kv-font); font-size:0.74rem; font-weight:600; white-space:nowrap; flex-shrink:0; }
+.sec-row-status.on  { color:var(--kv-green); }
+.sec-row-status.off { color:var(--kv-text3); }
+.sec-action-btn { font-family:var(--kv-font); font-size:0.78rem; font-weight:700; padding:0.38rem 0.9rem; border-radius:var(--kv-r-sm); cursor:pointer; white-space:nowrap; flex-shrink:0; transition:background 0.15s, border-color 0.15s, transform 0.1s; }
+.sec-action-btn.primary { background:var(--kv-blue); color:#fff; border:1.5px solid var(--kv-blue); }
+.sec-action-btn.primary:hover { background:var(--kv-blue2); transform:translateY(-1px); }
+.sec-action-btn.ghost { background:none; color:var(--kv-text2); border:1.5px solid var(--kv-border2); }
+.sec-action-btn.ghost:hover { border-color:var(--kv-blue-border); background:var(--kv-blue-dim); }
+
+.pf-pref-list { display:flex; flex-direction:column; }
+.pf-pref-item { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.75rem 0; border-bottom:1px solid var(--kv-border); }
+.pf-pref-item:last-child { border-bottom:none; }
+.pf-pref-info { flex:1; }
+.pf-pref-name { font-family:var(--kv-font); font-size:0.845rem; font-weight:600; color:var(--kv-text); }
+.pf-pref-sub { font-size:0.73rem; color:var(--kv-text3); margin-top:0.1rem; }
+.vk-toggle { position:relative; display:inline-block; width:38px; height:21px; flex-shrink:0; }
+.vk-toggle input { opacity:0; width:0; height:0; }
+.vk-toggle-slider { position:absolute; cursor:pointer; inset:0; background:var(--kv-bg4); border-radius:21px; transition:background 0.2s; }
+.vk-toggle-slider::before { content:''; position:absolute; height:15px; width:15px; left:3px; bottom:3px; background:var(--kv-surface); border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+.vk-toggle input:checked + .vk-toggle-slider { background:var(--kv-blue); }
+.vk-toggle input:checked + .vk-toggle-slider::before { transform:translateX(17px); }
+.pf-slider-wrap { display:flex; align-items:center; gap:0.65rem; min-width:130px; }
+.vk-slider { flex:1; -webkit-appearance:none; height:3px; background:var(--kv-blue-border); border-radius:3px; outline:none; cursor:pointer; }
+.vk-slider::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; background:var(--kv-blue); border-radius:50%; cursor:pointer; border:2px solid var(--kv-surface); box-shadow:0 2px 6px rgba(32,96,232,0.35); transition:transform 0.15s; }
+.vk-slider::-webkit-slider-thumb:hover { transform:scale(1.15); }
+.vk-slider::-moz-range-thumb { width:15px; height:15px; background:var(--kv-blue); border-radius:50%; cursor:pointer; border:2px solid var(--kv-surface); }
+.pf-slider-val { font-family:var(--kv-font); font-size:0.845rem; font-weight:700; color:var(--kv-text); min-width:22px; text-align:right; }
+
+.pf-activity-row { display:flex; gap:0; margin-bottom:1rem; background:var(--kv-blue-dim); border:1px solid var(--kv-blue-border); border-radius:var(--kv-r-sm); overflow:hidden; }
+.pf-activity-stat { flex:1; padding:1rem 1.25rem; display:flex; flex-direction:column; gap:0.15rem; border-right:1px solid var(--kv-blue-border); }
+.pf-activity-stat:last-child { border-right:none; }
+.pf-activity-val { font-family:var(--kv-mono); font-size:1.5rem; font-weight:500; color:var(--kv-text); letter-spacing:-0.02em; }
+.pf-activity-lbl { font-family:var(--kv-font); font-size:0.58rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--kv-text3); }
+.pf-activity-tip { display:flex; align-items:flex-start; gap:0.5rem; padding:0.75rem 0.9rem; background:var(--kv-surface2); border:1px solid var(--kv-border); border-radius:var(--kv-r-sm); color:var(--kv-text3); font-size:0.78rem; line-height:1.55; }
+.pf-activity-tip svg { color:var(--kv-accent); flex-shrink:0; margin-top:1px; }
+
+.pf-export-desc { font-size:0.845rem; color:var(--kv-text2); line-height:1.65; margin-bottom:0.85rem; }
+.pf-export-note { display:flex; align-items:flex-start; gap:0.55rem; padding:0.75rem 0.9rem; background:var(--kv-amber-dim); border:1px solid var(--kv-amber-border); border-radius:var(--kv-r-sm); color:var(--kv-amber); font-size:0.78rem; line-height:1.55; margin-bottom:1rem; }
+.pf-export-note svg { flex-shrink:0; margin-top:1px; }
+
+.pf-danger-list { display:flex; flex-direction:column; }
+.pf-danger-item { display:flex; align-items:center; justify-content:space-between; gap:1.25rem; padding:0.75rem 0; }
+.pf-danger-item + .pf-danger-item { border-top:1px solid var(--kv-border); }
+.pf-danger-name { font-family:var(--kv-font); font-size:0.845rem; font-weight:600; color:var(--kv-text); }
+.pf-danger-sub { font-size:0.74rem; color:var(--kv-text3); margin-top:0.2rem; line-height:1.5; }
+
+.confirm-modal-inner { display:flex; flex-direction:column; }
+.confirm-modal-head { display:flex; align-items:center; gap:0.85rem; padding:1.2rem 1.4rem; }
+.confirm-modal-icon-wrap { width:38px; height:38px; border-radius:var(--kv-r-sm); background:var(--kv-blue-dim); border:1px solid var(--kv-blue-border); color:var(--kv-accent); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.confirm-modal-icon-wrap.danger { background:var(--kv-red-dim); border-color:var(--kv-red-border); color:var(--kv-red); }
+.confirm-modal-title { font-family:var(--kv-font); font-size:0.95rem; font-weight:700; color:var(--kv-text); flex:1; margin:0; }
+.confirm-modal-body-lines { padding:1rem 1.4rem; display:flex; flex-direction:column; gap:0.45rem; }
+.confirm-modal-line { font-size:0.845rem; color:var(--kv-text2); line-height:1.65; margin:0; }
+.confirm-modal-footer { padding:0.9rem 1.4rem; border-top:1px solid var(--kv-border); display:flex; align-items:center; justify-content:flex-end; gap:0.65rem; }
+
+.vk-modal { background:var(--kv-surface) !important; border:1px solid var(--kv-border2) !important; border-radius:var(--kv-r-lg) !important; box-shadow:var(--kv-shadow) !important; color:var(--kv-text) !important; }
+.vk-modal-header { display:flex; align-items:center; justify-content:space-between; padding:1.1rem 1.4rem; border-bottom:1px solid var(--kv-border); }
+.vk-modal-title { font-family:var(--kv-font); font-size:0.95rem; font-weight:700; color:var(--kv-text); }
+.vk-modal-close { background:none; border:none; color:var(--kv-text3); cursor:pointer; padding:0; line-height:0; transition:color 0.2s; }
+.vk-modal-close:hover { color:var(--kv-text); }
+.vk-modal-body { padding:1.4rem; display:flex; flex-direction:column; gap:1rem; }
+.vk-modal-footer { padding:0.9rem 1.4rem; border-top:1px solid var(--kv-border); display:flex; align-items:center; justify-content:flex-end; gap:0.65rem; }
+
+.two-fa-icon-wrap { width:36px; height:36px; border-radius:var(--kv-r-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.two-fa-icon-wrap.accent { background:var(--kv-blue-dim); border:1px solid var(--kv-blue-border); color:var(--kv-accent); }
+.two-fa-icon-wrap.red    { background:var(--kv-red-dim);  border:1px solid var(--kv-red-border);  color:var(--kv-red); }
+.setup-step { display:flex; gap:0.75rem; align-items:flex-start; }
+.setup-step-num { width:21px; height:21px; border-radius:50%; background:var(--kv-blue); color:#fff; font-family:var(--kv-font); font-size:0.68rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.setup-step-text { font-size:0.845rem; color:var(--kv-text2); line-height:1.55; }
+.setup-step-text strong { color:var(--kv-text); }
+.totp-qr-wrap { display:flex; justify-content:center; padding:1.1rem; background:var(--kv-surface2); border:1px solid var(--kv-border); border-radius:var(--kv-r-sm); }
+.totp-qr-wrap svg { width:160px; height:160px; display:block; }
+.totp-secret-wrap { background:var(--kv-surface2); border:1.5px solid var(--kv-border2); border-radius:var(--kv-r-sm); padding:0.6rem 0.9rem; display:flex; align-items:center; justify-content:space-between; gap:0.65rem; }
+.totp-secret-key { font-family:var(--kv-mono); font-size:0.8rem; color:var(--kv-text); letter-spacing:0.12em; word-break:break-all; flex:1; }
+.btn-copy-secret { background:none; border:none; color:var(--kv-text3); cursor:pointer; padding:0.2rem 0.4rem; line-height:0; border-radius:var(--kv-r-sm); transition:color 0.15s, background 0.15s; }
+.btn-copy-secret:hover { color:var(--kv-accent); background:var(--kv-blue-dim); }
+.modal-inner-divider { height:1px; background:var(--kv-border); margin:0.2rem 0; }
+.tfa-code-input { font-family:var(--kv-mono) !important; font-size:1.6rem !important; font-weight:600; letter-spacing:0.35em; text-align:center; padding:0.7rem 1rem !important; caret-color:var(--kv-blue); }
+.backup-codes-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.45rem; }
+.backup-code-item { background:var(--kv-surface2); border:1px solid var(--kv-border); border-radius:var(--kv-r-sm); padding:0.5rem 0.75rem; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s; }
+.backup-code-item:hover { border-color:var(--kv-blue-border); }
+.backup-code-text { font-family:var(--kv-mono); font-size:0.8rem; font-weight:600; color:var(--kv-text); letter-spacing:0.05em; }
+.backup-codes-warning { display:flex; align-items:flex-start; gap:0.55rem; padding:0.75rem 0.9rem; background:var(--kv-amber-dim); border:1px solid var(--kv-amber-border); border-radius:var(--kv-r-sm); color:var(--kv-amber); font-size:0.8rem; line-height:1.55; }
+.backup-codes-warning svg { flex-shrink:0; margin-top:1px; color:var(--kv-amber); }
+
+/* ── Color picker — 7 swatches, no #2060e8 ── */
+.color-picker { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.color-swatch { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.15s; }
+.color-swatch:hover { transform:scale(1.15); }
+.color-swatch.active { border-color:var(--kv-text); transform:scale(1.1); }
+
+.delete-msg { color:var(--kv-text2); font-size:0.845rem; }
+
+.logout-option-card { display:flex; align-items:center; gap:0.9rem; width:100%; background:var(--kv-surface2); border:1.5px solid var(--kv-border); border-radius:var(--kv-r-lg); padding:0.85rem 1rem; cursor:pointer; text-align:left; transition:border-color 0.2s, background 0.2s, transform 0.15s; font-family:var(--kv-body); color:var(--kv-text); }
+.logout-option-card:hover { background:var(--kv-surface); border-color:var(--kv-blue-border); transform:translateY(-1px); }
+.logout-option-card.logout-option-danger:hover { border-color:var(--kv-red-border); background:var(--kv-red-dim); }
+.logout-option-icon { width:38px; height:38px; border-radius:var(--kv-r-sm); border:1px solid transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.logout-option-text { display:flex; flex-direction:column; gap:0.1rem; flex:1; }
+.logout-option-title { font-family:var(--kv-font); font-size:0.845rem; font-weight:700; color:var(--kv-text); }
+.logout-option-sub { font-size:0.74rem; color:var(--kv-text3); }
+.logout-option-card.logout-option-danger .logout-option-title { color:var(--kv-red); }
+
+.toast-container { position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999; display:flex; flex-direction:column; gap:0.4rem; }
+.toast-msg { background:var(--kv-surface); border:1px solid var(--kv-border2); color:var(--kv-text); padding:0.6rem 1rem; border-radius:var(--kv-r-sm); font-size:0.8rem; box-shadow:var(--kv-shadow); max-width:300px; animation:toast-in 0.3s cubic-bezier(0.22,1,0.36,1); }
+.toast-msg.success { border-color:rgba(74,222,128,0.3); color:var(--kv-green); }
+.toast-msg.error   { border-color:var(--kv-red-border); color:var(--kv-red); }
+@keyframes toast-in { from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);} }
+
+.kv-sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99; }
+
+@media (max-width:991px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); box-shadow:0 0 60px rgba(0,0,0,0.5); }
+  .kv-sidebar-overlay.active { display:block; }
+  .sidebar-close { display:flex; align-items:center; justify-content:center; }
+  .main-content { margin-left:0; }
+  .topbar-menu { display:flex; }
+  .pf-content { padding:1.25rem 1rem 2rem; }
+}
+@media (max-width:768px) {
+  .pf-hero-inner { flex-direction:column; align-items:flex-start; gap:1.1rem; }
+  .pf-hero-stats { border-left:none; border-top:1px solid rgba(255,255,255,0.1); padding-left:0; padding-top:1rem; width:100%; }
+  .pf-field-row { flex-direction:column; }
+  .pf-danger-item { flex-direction:column; align-items:flex-start; gap:0.65rem; }
+}
+@media (max-width:480px) {
+  .pf-hero-stats { gap:1.25rem; }
+  .pf-stat-val { font-size:1.2rem; }
+  .pf-activity-row { flex-direction:column; }
+  .pf-activity-stat { border-right:none; border-bottom:1px solid var(--kv-blue-border); }
+  .pf-activity-stat:last-child { border-bottom:none; }
+  .backup-codes-grid { grid-template-columns:1fr; }
+}
+</style>
+
+
 <div class="app-shell">
 
-  <!-- ── Sidebar ── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="brand-lockup">
-        <div class="brand-icon sm">
-          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="#c8f060"/>
-            <path d="M18 8C14.13 8 11 11.13 11 15c0 2.97 1.8 5.52 4.4 6.65V26h5.2v-4.35C23.2 20.52 25 17.97 25 15c0-3.87-3.13-7-7-7z" fill="#0a0a0a"/>
-            <circle cx="18" cy="15" r="2.5" fill="#c8f060"/>
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M12 2L4 6v5c0 5.25 3.5 10.15 8 11.35C16.5 21.15 20 16.25 20 11V6L12 2z"/>
           </svg>
         </div>
-        <span class="brand-name">VaultKey</span>
+        <span class="brand-name">KeyVora</span>
       </div>
-      <button class="sidebar-close d-lg-none" onclick="toggleSidebar()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="sidebar-close d-lg-none" onclick="toggleSidebar()" aria-label="Close sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
@@ -30,15 +403,14 @@
 
     <div class="sidebar-search">
       <div class="search-wrap">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" class="search-input" placeholder="Search vault..." onclick="window.location.href='/dashboard'"/>
+        <input type="text" class="search-input" placeholder="Search vault…" onclick="window.location.href='/dashboard'"/>
       </div>
     </div>
 
     <div class="sidebar-section-label">Navigation</div>
-
     <nav class="sidebar-nav">
       <a class="nav-item" href="/dashboard" style="text-decoration:none;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,26 +429,20 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div class="acct-switcher-wrap" style="position:relative;flex:1;min-width:0;">
-        <div class="user-chip"
-             onclick="toggleAccountSwitcher(event)"
-             style="cursor:pointer;"
-             title="Switch or manage accounts">
+      <div class="acct-switcher-wrap">
+        <div class="user-chip" onclick="toggleAccountSwitcher(event)" title="Switch or manage accounts">
           <div class="user-avatar">{{ user.username[0].upper() }}</div>
           <div class="user-info">
             <span class="user-name">{{ user.username }}</span>
             <span class="user-role">Personal Vault</span>
           </div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-               stroke="var(--text3)" stroke-width="2"
-               style="margin-left:auto;flex-shrink:0;transition:transform 0.2s;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--kv-text3)" stroke-width="2" style="margin-left:auto;flex-shrink:0;">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
         </div>
       </div>
-
       <button class="btn-logout" onclick="openLogoutModal()" title="Sign out">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
           <line x1="21" y1="12" x2="9" y2="12"/>
@@ -85,505 +451,499 @@
     </div>
   </aside>
 
-  <!-- ── Main Content ── -->
   <main class="main-content" id="main-content">
 
     <header class="topbar">
-      <button class="topbar-menu d-lg-none" onclick="toggleSidebar()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="topbar-menu d-lg-none" onclick="toggleSidebar()" aria-label="Open sidebar">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
       <div class="topbar-title">Profile &amp; Settings</div>
+      <button class="kv-theme-toggle" id="kv-theme-btn" title="Toggle light / dark" aria-label="Toggle theme">
+        <svg class="kv-ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="kv-ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
     </header>
 
-    <section class="content-section">
+    <section class="pf-content">
 
-      <!-- Profile Hero -->
-      <div class="profile-hero">
-        <div class="profile-avatar-wrap">
-          <div class="profile-avatar" id="profile-avatar">{{ user.username[0].upper() }}</div>
-          <button class="avatar-change-btn" id="avatar-change-btn" title="Change avatar color">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M8 12a4 4 0 0 1 4-4"/>
-            </svg>
-          </button>
-        </div>
-        <div class="profile-hero-info">
-          <h2 class="profile-name">{{ user.username }}</h2>
-          <p class="profile-email-display" id="profile-email-display">{{ user.email }}</p>
-          <div class="profile-badge">
-            <svg width="12" height="12" viewBox="0 0 36 36" fill="none">
-              <rect width="36" height="36" rx="8" fill="#c8f060"/>
-              <path d="M18 8C14.13 8 11 11.13 11 15c0 2.97 1.8 5.52 4.4 6.65V26h5.2v-4.35C23.2 20.52 25 17.97 25 15c0-3.87-3.13-7-7-7z" fill="#0a0a0a"/>
-            </svg>
-            Personal Vault
+      <div class="pf-hero">
+        <div class="pf-hero-mesh"></div>
+        <div class="pf-hero-inner">
+          <div class="pf-avatar-wrap">
+            <div class="pf-avatar" id="profile-avatar">{{ user.username[0].upper() }}</div>
+            <button class="pf-avatar-edit" id="avatar-change-btn" title="Change colour">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 1 4-4"/>
+              </svg>
+            </button>
           </div>
-        </div>
-        <div class="profile-stats-mini">
-          <div class="mini-stat">
-            <span class="mini-stat-value" id="hero-notebooks">—</span>
-            <span class="mini-stat-label">Notebooks</span>
+          <div class="pf-hero-text">
+            <h1 class="pf-username">{{ user.username }}</h1>
+            <p class="pf-email" id="profile-email-display">{{ user.email }}</p>
+            <span class="pf-badge">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Personal Vault
+            </span>
           </div>
-          <div class="mini-stat-divider"></div>
-          <div class="mini-stat">
-            <span class="mini-stat-value" id="hero-entries">—</span>
-            <span class="mini-stat-label">Passwords</span>
-          </div>
-          <div class="mini-stat-divider"></div>
-          <div class="mini-stat">
-            <span class="mini-stat-value" id="hero-since">—</span>
-            <span class="mini-stat-label">Member Since</span>
+          <div class="pf-hero-stats">
+            <div class="pf-stat">
+              <span class="pf-stat-val" id="hero-notebooks">—</span>
+              <span class="pf-stat-lbl">Notebooks</span>
+            </div>
+            <div class="pf-stat-div"></div>
+            <div class="pf-stat">
+              <span class="pf-stat-val" id="hero-entries">—</span>
+              <span class="pf-stat-lbl">Passwords</span>
+            </div>
+            <div class="pf-stat-div"></div>
+            <div class="pf-stat">
+              <span class="pf-stat-val" id="hero-since">—</span>
+              <span class="pf-stat-lbl">Member since</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Alert / Success -->
-      <div id="profile-alert"   class="auth-alert   d-none" style="margin-bottom:1.5rem;"></div>
-      <div id="profile-success" class="auth-success d-none" style="margin-bottom:1.5rem;"></div>
+      <div id="profile-alert"   class="auth-alert   d-none" style="margin:0 0 1rem;"></div>
+      <div id="profile-success" class="auth-success d-none" style="margin:0 0 1rem;"></div>
 
-      <!-- Settings Grid -->
-      <div class="profile-grid">
+      <div class="pf-sections">
 
-        <!-- ── Account Information ── -->
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Account Information</h3>
-              <p class="profile-card-sub">Update your username</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-            <div class="field-group">
-              <label class="field-label">Username</label>
-              <input type="text" id="upd-username" class="field-input" value="{{ user.username }}" placeholder="yourname"/>
-            </div>
-            <div class="field-group">
-              <label class="field-label" style="display:flex;align-items:center;gap:0.5rem;">
-                Email Address
-                <span style="font-size:0.7rem;font-weight:600;background:var(--bg3);border:1px solid var(--border2);color:var(--text3);padding:0.1rem 0.5rem;border-radius:20px;text-transform:none;letter-spacing:0;">Cannot be changed</span>
-              </label>
-              <input type="email" id="upd-email" class="field-input" value="{{ user.email }}" disabled style="opacity:0.5;cursor:not-allowed;"/>
-            </div>
-            <div class="profile-card-footer">
-              <button class="btn-confirm" id="btn-save-account">Save Changes</button>
-            </div>
-          </div>
-        </div>
+        <div class="pf-group-label">Account</div>
 
-        <!-- ── Change Password ──
-             id="change-password-card" is read by profile.js to adapt
-             the card title/subtitle for Google users.
-        -->
-        <div class="profile-card" id="change-password-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Change Password</h3>
-              <p class="profile-card-sub">Update your master password</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-
-            <!-- Google user notice — hidden by default, shown by JS -->
-            <div id="google-pw-notice" style="display:none;align-items:flex-start;gap:0.6rem;background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.25);border-radius:var(--radius-sm);padding:0.75rem 1rem;font-size:0.8125rem;color:var(--text2);line-height:1.6;margin-bottom:0.25rem;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" style="flex-shrink:0;margin-top:2px;">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <span>You signed in with Google. Setting a master password will encrypt your vault entries so only you can read them. It <strong style="color:var(--text);">cannot be recovered</strong> if forgotten.</span>
-            </div>
-
-            <!-- Current password — hidden for Google users by JS -->
-            <div class="field-group">
-              <label class="field-label">Current Password</label>
-              <div class="password-wrap">
-                <input type="password" id="current-password" class="field-input" placeholder="Enter current password"/>
-                <button type="button" class="toggle-pw" onclick="togglePassword('current-password')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
+        <div class="pf-section" id="section-account">
+          <button class="pf-section-trigger" onclick="toggleSection('account')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title">Account details</span>
+                <span class="pf-section-desc">Update your username</span>
               </div>
             </div>
-
-            <div class="field-group">
-              <label class="field-label">New Password</label>
-              <div class="password-wrap">
-                <input type="password" id="new-password" class="field-input" placeholder="Min. 8 characters"/>
-                <button type="button" class="toggle-pw" onclick="togglePassword('new-password')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-              <div style="display:flex;gap:5px;margin-top:0.5rem;">
-                <div id="sb-1" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-                <div id="sb-2" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-                <div id="sb-3" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-                <div id="sb-4" style="flex:1;height:5px;border-radius:3px;background:var(--border2);transition:background 0.3s;"></div>
-              </div>
-              <span id="pw-strength-label" style="margin-top:0.3rem;display:block;font-size:0.75rem;font-family:var(--mono);"></span>
+            <div class="pf-section-right">
+              <span class="pf-section-meta" id="meta-account">{{ user.username }}</span>
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div class="field-group">
-              <label class="field-label">Confirm New Password</label>
-              <div class="password-wrap">
-                <input type="password" id="confirm-password" class="field-input" placeholder="Repeat new password"/>
-                <button type="button" class="toggle-pw" onclick="togglePassword('confirm-password')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="profile-card-footer">
-              <button class="btn-confirm" id="btn-save-password">Update Password</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Security Overview ── -->
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Security Overview</h3>
-              <p class="profile-card-sub">Your vault's security status</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-
-            <!-- Static items -->
-            <div class="security-item">
-              <div class="security-item-left">
-                <div class="security-dot green"></div>
-                <div>
-                  <div class="security-item-title">Encryption</div>
-                  <div class="security-item-sub">AES-256 via Fernet · PBKDF2-SHA256</div>
+          </button>
+          <div class="pf-section-body" id="body-account">
+            <div class="pf-section-inner">
+              <div class="pf-field-row">
+                <div class="field-group">
+                  <label class="field-label">Current username <span class="pf-locked-badge">Read only</span></label>
+                  <input type="text" id="upd-current-username" class="field-input" value="{{ user.username }}" readonly autocomplete="off"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">New username</label>
+                  <input type="text" id="upd-new-username" class="field-input" placeholder="Enter new username" autocomplete="off"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Email <span class="pf-locked-badge">Cannot be changed</span></label>
+                  <input type="email" class="field-input" value="{{ user.email }}" disabled/>
                 </div>
               </div>
-              <span class="security-badge good">Active</span>
+              <div class="pf-section-footer">
+                <button class="btn-confirm" id="btn-save-account">Save changes</button>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div class="security-item">
-              <div class="security-item-left">
-                <div class="security-dot green"></div>
-                <div>
-                  <div class="security-item-title">Session Protection</div>
-                  <div class="security-item-sub">HttpOnly cookie · SameSite Lax</div>
+        <div class="pf-section" id="section-password">
+          <button class="pf-section-trigger" onclick="toggleSection('password')" id="change-password-card">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title" id="pw-section-title">Master password</span>
+                <span class="pf-section-desc" id="pw-section-desc">Change your vault encryption key</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <span class="pf-section-meta">••••••••</span>
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-password">
+            <div class="pf-section-inner">
+              <div id="google-pw-notice" style="display:none;align-items:flex-start;gap:0.55rem;background:var(--kv-blue-dim);border:1px solid var(--kv-blue-border);border-radius:var(--kv-r-sm);padding:0.75rem 0.9rem;font-size:0.8rem;color:var(--kv-text2);line-height:1.6;margin-bottom:0.75rem;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--kv-accent)" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>You signed in with Google. Setting a master password will encrypt your vault. It <strong style="color:var(--kv-text);">cannot be recovered</strong> if forgotten.</span>
+              </div>
+              <div class="pf-field-row">
+                <div class="field-group" id="current-pw-group">
+                  <label class="field-label">Current password</label>
+                  <div class="password-wrap">
+                    <input type="password" id="current-password" class="field-input" placeholder="Enter your current password" autocomplete="current-password"/>
+                    <button type="button" class="toggle-pw" onclick="togglePassword('current-password')">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">New password</label>
+                  <div class="password-wrap">
+                    <input type="password" id="new-password" class="field-input" placeholder="Min. 8 characters" autocomplete="new-password"/>
+                    <button type="button" class="toggle-pw" onclick="togglePassword('new-password')">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                  <div style="display:flex;gap:4px;margin-top:0.4rem;">
+                    <div id="sb-1" class="pf-strength-bar"></div>
+                    <div id="sb-2" class="pf-strength-bar"></div>
+                    <div id="sb-3" class="pf-strength-bar"></div>
+                    <div id="sb-4" class="pf-strength-bar"></div>
+                  </div>
+                  <span id="pw-strength-label" style="font-size:0.7rem;font-family:var(--kv-mono);margin-top:0.15rem;display:block;"></span>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm new password</label>
+                  <div class="password-wrap">
+                    <input type="password" id="confirm-password" class="field-input" placeholder="Repeat new password" autocomplete="new-password"/>
+                    <button type="button" class="toggle-pw" onclick="togglePassword('confirm-password')">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <span class="security-badge good">Active</span>
+              <div class="pf-section-footer">
+                <button class="btn-confirm" id="btn-save-password">Update password</button>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div class="security-item">
-              <div class="security-item-left">
-                <div class="security-dot green"></div>
-                <div>
-                  <div class="security-item-title">Password Hashing</div>
-                  <div class="security-item-sub">Bcrypt with salt</div>
+        <div class="pf-group-label">Security</div>
+
+        <div class="pf-section" id="section-security">
+          <button class="pf-section-trigger" onclick="toggleSection('security')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title">Security</span>
+                <span class="pf-section-desc">Encryption status &amp; two-factor auth</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-security">
+            <div class="pf-section-inner">
+              <div class="sec-table">
+                <div class="sec-row">
+                  <div class="sec-row-left">
+                    <div class="sec-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="sec-row-text">
+                      <span class="sec-row-name">Encryption</span>
+                      <span class="sec-row-detail">AES-256 via Fernet, keys stretched with PBKDF2-SHA256 over 390,000 rounds</span>
+                    </div>
+                  </div>
+                  <span class="sec-row-status on">Enabled</span>
+                </div>
+                <div class="sec-row">
+                  <div class="sec-row-left">
+                    <div class="sec-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="sec-row-text">
+                      <span class="sec-row-name">Session protection</span>
+                      <span class="sec-row-detail">HttpOnly cookie, SameSite Lax — inaccessible to JavaScript</span>
+                    </div>
+                  </div>
+                  <span class="sec-row-status on">Enabled</span>
+                </div>
+                <div class="sec-row">
+                  <div class="sec-row-left">
+                    <div class="sec-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="sec-row-text">
+                      <span class="sec-row-name">Password hashing</span>
+                      <span class="sec-row-detail">Bcrypt with per-user salt — resistant to GPU cracking</span>
+                    </div>
+                  </div>
+                  <span class="sec-row-status on">Enabled</span>
+                </div>
+                <div class="sec-row" id="2fa-security-row">
+                  <div class="sec-row-left">
+                    <div class="sec-check warn" id="2fa-check-icon">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <div class="sec-row-text">
+                      <span class="sec-row-name">Two-factor authentication</span>
+                      <span class="sec-row-detail" id="2fa-security-sub">Add a second layer — require a code from your authenticator app on every sign-in</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.55rem;flex-shrink:0;">
+                    <span class="sec-row-status off" id="2fa-status-badge">Not set up</span>
+                    <button class="sec-action-btn primary d-none" id="btn-enable-2fa">Set up</button>
+                    <button class="sec-action-btn ghost  d-none" id="btn-disable-2fa">Disable</button>
+                  </div>
+                </div>
+                <div class="sec-row d-none" id="2fa-regen-row" style="border-bottom:none;">
+                  <div class="sec-row-left">
+                    <div class="sec-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="sec-row-text">
+                      <span class="sec-row-name">Backup codes</span>
+                      <span class="sec-row-detail" id="2fa-backup-sub">One-time codes for account recovery if you lose your authenticator</span>
+                    </div>
+                  </div>
+                  <button class="sec-action-btn ghost" id="btn-regen-backup">Regenerate</button>
                 </div>
               </div>
-              <span class="security-badge good">Active</span>
             </div>
+          </div>
+        </div>
 
-            <!-- ── 2FA row — fully controlled by JS ── -->
-            <div class="security-item" id="2fa-security-row">
-              <div class="security-item-left">
-                <div class="security-dot yellow" id="2fa-status-dot"></div>
-                <div>
-                  <div class="security-item-title">Two-Factor Auth</div>
-                  <div class="security-item-sub" id="2fa-security-sub">Loading…</div>
+        <div class="pf-group-label">Preferences</div>
+
+        <div class="pf-section" id="section-prefs">
+          <button class="pf-section-trigger" onclick="toggleSection('prefs')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title">Preferences</span>
+                <span class="pf-section-desc">Vault behaviour &amp; generator settings</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <span class="pf-section-meta" id="meta-prefs">Default</span>
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-prefs">
+            <div class="pf-section-inner">
+              <div class="pf-pref-list">
+                <div class="pf-pref-item">
+                  <div class="pf-pref-info">
+                    <div class="pf-pref-name">Auto-lock vault</div>
+                    <div class="pf-pref-sub">Lock after inactivity</div>
+                  </div>
+                  <label class="vk-toggle"><input type="checkbox" id="pref-autolock" checked/><span class="vk-toggle-slider"></span></label>
+                </div>
+                <div class="pf-pref-item">
+                  <div class="pf-pref-info">
+                    <div class="pf-pref-name">Confirm before delete</div>
+                    <div class="pf-pref-sub">Ask for confirmation before deleting entries</div>
+                  </div>
+                  <label class="vk-toggle"><input type="checkbox" id="pref-confirm-delete" checked/><span class="vk-toggle-slider"></span></label>
+                </div>
+                <div class="pf-pref-item" style="border-bottom:none;">
+                  <div class="pf-pref-info">
+                    <div class="pf-pref-name">Generated password length</div>
+                    <div class="pf-pref-sub">Length for the built-in password generator</div>
+                  </div>
+                  <div class="pf-slider-wrap">
+                    <input type="range" id="pref-pw-length" class="vk-slider" min="8" max="32" value="16" step="1"/>
+                    <span class="pf-slider-val" id="pref-pw-length-val">16</span>
+                  </div>
                 </div>
               </div>
-              <div class="security-item-actions">
-                <span class="security-badge warn" id="2fa-status-badge">—</span>
-                <button class="btn-confirm d-none" id="btn-enable-2fa"
-                        style="padding:0.3rem 0.75rem;font-size:0.75rem;">
-                  Enable
+              <div class="pf-section-footer">
+                <button class="btn-confirm" id="btn-save-prefs">Save preferences</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-group-label">Activity</div>
+
+        <div class="pf-section" id="section-activity">
+          <button class="pf-section-trigger" onclick="toggleSection('activity')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title">Vault activity</span>
+                <span class="pf-section-desc">Overview of your vault contents</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <span class="pf-section-meta" id="meta-activity">—</span>
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-activity">
+            <div class="pf-section-inner">
+              <div class="pf-activity-row">
+                <div class="pf-activity-stat">
+                  <span class="pf-activity-val" id="act-notebooks">—</span>
+                  <span class="pf-activity-lbl">Notebooks</span>
+                </div>
+                <div class="pf-activity-stat">
+                  <span class="pf-activity-val" id="act-entries">—</span>
+                  <span class="pf-activity-lbl">Passwords</span>
+                </div>
+                <div class="pf-activity-stat">
+                  <span class="pf-activity-val" id="act-since">—</span>
+                  <span class="pf-activity-lbl">Joined</span>
+                </div>
+              </div>
+              <div class="pf-activity-tip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Your passwords are encrypted end-to-end. Only your master password can decrypt them.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-group-label">Data</div>
+
+        <div class="pf-section" id="section-export">
+          <button class="pf-section-trigger" onclick="toggleSection('export')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title">Export vault data</span>
+                <span class="pf-section-desc">Download a backup of your passwords</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-export">
+            <div class="pf-section-inner">
+              <p class="pf-export-desc">Download all your vault data as a JSON file. Useful for backups, migration, or keeping a local copy of your credentials.</p>
+              <div class="pf-export-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Passwords are exported as plain text. Store the file somewhere safe and never share it.
+              </div>
+              <div class="pf-section-footer">
+                <button class="btn-cancel" id="btn-export">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export as JSON
                 </button>
-                <button class="btn-cancel d-none" id="btn-disable-2fa"
-                        style="padding:0.3rem 0.75rem;font-size:0.75rem;">
-                  Disable
-                </button>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- ── Backup codes regen row (shown only when 2FA on) ── -->
-            <div class="security-item d-none" id="2fa-regen-row">
-              <div class="security-item-left">
-                <div class="security-dot green"></div>
-                <div>
-                  <div class="security-item-title">Backup Codes</div>
-                  <div class="security-item-sub" id="2fa-backup-sub">— codes remaining</div>
+        <div class="pf-group-label danger-label">Irreversible actions</div>
+
+        <div class="pf-section pf-section-danger" id="section-danger">
+          <button class="pf-section-trigger" onclick="toggleSection('danger')">
+            <div class="pf-section-left">
+              <div class="pf-section-icon pf-section-icon-danger">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="pf-section-info">
+                <span class="pf-section-title" style="color:var(--kv-red);">Account management</span>
+                <span class="pf-section-desc">Actions that cannot be undone — proceed carefully</span>
+              </div>
+            </div>
+            <div class="pf-section-right">
+              <svg class="pf-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </button>
+          <div class="pf-section-body" id="body-danger">
+            <div class="pf-section-inner">
+              <div class="pf-danger-list">
+                <div class="pf-danger-item">
+                  <div>
+                    <div class="pf-danger-name">Delete all notebooks</div>
+                    <div class="pf-danger-sub">Permanently removes all notebooks and every password entry inside them.</div>
+                  </div>
+                  <button class="btn-danger" id="btn-delete-all-nb">Clear vault</button>
+                </div>
+                <div class="pf-danger-item">
+                  <div>
+                    <div class="pf-danger-name">Delete account</div>
+                    <div class="pf-danger-sub">Permanently deletes your account and all associated data.</div>
+                  </div>
+                  <button class="btn-danger" id="btn-delete-account">Delete account</button>
                 </div>
               </div>
-              <div class="security-item-actions">
-                <button class="btn-cancel" id="btn-regen-backup"
-                        style="padding:0.3rem 0.75rem;font-size:0.75rem;">
-                  Regenerate
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ── Activity ── -->
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Vault Activity</h3>
-              <p class="profile-card-sub">Your vault at a glance</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-            <div class="activity-stats">
-              <div class="activity-stat">
-                <span class="activity-stat-value" id="act-notebooks">—</span>
-                <span class="activity-stat-label">Notebooks</span>
-              </div>
-              <div class="activity-stat">
-                <span class="activity-stat-value" id="act-entries">—</span>
-                <span class="activity-stat-label">Passwords</span>
-              </div>
-              <div class="activity-stat">
-                <span class="activity-stat-value" id="act-since">—</span>
-                <span class="activity-stat-label">Joined</span>
-              </div>
-            </div>
-            <div class="activity-tip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              Your passwords are encrypted end-to-end with your master password as the key.
             </div>
           </div>
         </div>
 
-        <!-- ── Preferences ── -->
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Preferences</h3>
-              <p class="profile-card-sub">Vault behaviour settings</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-            <div class="pref-item">
-              <div class="pref-item-info">
-                <div class="pref-item-title">Auto-lock vault</div>
-                <div class="pref-item-sub">Lock after inactivity</div>
-              </div>
-              <label class="vk-toggle">
-                <input type="checkbox" id="pref-autolock" checked/>
-                <span class="vk-toggle-slider"></span>
-              </label>
-            </div>
-            <div class="pref-item">
-              <div class="pref-item-info">
-                <div class="pref-item-title">Show password strength</div>
-                <div class="pref-item-sub">Display strength indicator when adding entries</div>
-              </div>
-              <label class="vk-toggle">
-                <input type="checkbox" id="pref-strength" checked/>
-                <span class="vk-toggle-slider"></span>
-              </label>
-            </div>
-            <div class="pref-item">
-              <div class="pref-item-info">
-                <div class="pref-item-title">Confirm before delete</div>
-                <div class="pref-item-sub">Ask for confirmation before deleting entries</div>
-              </div>
-              <label class="vk-toggle">
-                <input type="checkbox" id="pref-confirm-delete" checked/>
-                <span class="vk-toggle-slider"></span>
-              </label>
-            </div>
-            <div class="field-group" style="margin-top:0.75rem;">
-              <label class="field-label">Generated Password Length</label>
-              <div class="slider-wrap">
-                <input type="range" id="pref-pw-length" class="vk-slider" min="8" max="32" value="16"/>
-                <span class="slider-val" id="pref-pw-length-val">16</span>
-              </div>
-            </div>
-            <div class="profile-card-footer">
-              <button class="btn-confirm" id="btn-save-prefs">Save Preferences</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Danger Zone ── -->
-        <div class="profile-card danger-card">
-          <div class="profile-card-header">
-            <div class="profile-card-icon danger-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="profile-card-title">Danger Zone</h3>
-              <p class="profile-card-sub">Irreversible actions — proceed with care</p>
-            </div>
-          </div>
-          <div class="profile-card-body">
-            <div class="danger-item">
-              <div>
-                <div class="danger-item-title">Export Vault Data</div>
-                <div class="danger-item-sub">Download all your vault data as a JSON file</div>
-              </div>
-              <button class="btn-cancel" id="btn-export">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Export
-              </button>
-            </div>
-            <div class="danger-divider"></div>
-            <div class="danger-item">
-              <div>
-                <div class="danger-item-title">Delete All Notebooks</div>
-                <div class="danger-item-sub">Permanently delete all notebooks and entries</div>
-              </div>
-              <button class="btn-danger" id="btn-delete-all-nb">Clear Vault</button>
-            </div>
-            <div class="danger-divider"></div>
-            <div class="danger-item">
-              <div>
-                <div class="danger-item-title">Delete Account</div>
-                <div class="danger-item-sub">Permanently delete your account and all data</div>
-              </div>
-              <button class="btn-danger" id="btn-delete-account">Delete Account</button>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- end profile-grid -->
+      </div>
     </section>
   </main>
 </div>
 
+<div class="kv-sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     Logout Modal
-══════════════════════════════════════════════════════════ -->
+<!-- LOGOUT MODAL -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
-    <div class="modal-content vk-modal" style="border-radius:var(--radius);overflow:hidden;">
-      <div class="vk-modal-header" style="padding:1.25rem 1.5rem 1rem;">
+    <div class="modal-content vk-modal" style="border-radius:var(--kv-r-lg);overflow:hidden;">
+      <div class="vk-modal-header" style="padding:1.2rem 1.4rem 1rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;">
-          <div style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--red-dim);border:1px solid rgba(255,95,109,0.25);display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <div style="width:36px;height:36px;border-radius:var(--kv-r-sm);background:var(--kv-red-dim);border:1px solid var(--kv-red-border);display:flex;align-items:center;justify-content:center;color:var(--kv-red);flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </div>
           <div>
-            <h5 class="vk-modal-title" style="margin:0;font-size:1rem;">Sign Out</h5>
-            <p id="logout-acct-hint" style="margin:0;font-size:0.75rem;color:var(--text3);">Choose how to sign out</p>
+            <h5 class="vk-modal-title" style="margin:0;">Sign out</h5>
+            <p id="logout-acct-hint" style="margin:0;font-size:0.74rem;color:var(--kv-text3);">Choose how to sign out</p>
           </div>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div style="height:1px;background:var(--border);margin:0 1.5rem;"></div>
-      <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.65rem;">
+      <div style="height:1px;background:var(--kv-border);margin:0 1.4rem;"></div>
+      <div style="padding:1.1rem 1.4rem;display:flex;flex-direction:column;gap:0.6rem;">
         <button id="btn-confirm-logout" class="logout-option-card">
-          <div class="logout-option-icon" style="background:var(--accent-dim);border-color:rgba(200,240,96,0.25);color:var(--accent);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
+          <div class="logout-option-icon" style="background:var(--kv-blue-dim);border-color:var(--kv-blue-border);color:var(--kv-accent);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </div>
           <div class="logout-option-text">
             <span class="logout-option-title">Sign out this account</span>
             <span class="logout-option-sub">Removes only the current session</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--kv-text3);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button id="btn-confirm-logout-all" class="logout-option-card logout-option-danger">
-          <div class="logout-option-icon" style="background:var(--red-dim);border-color:rgba(255,95,109,0.25);color:var(--red);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
+          <div class="logout-option-icon" style="background:var(--kv-red-dim);border-color:var(--kv-red-border);color:var(--kv-red);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
           <div class="logout-option-text">
             <span class="logout-option-title">Sign out all accounts</span>
             <span class="logout-option-sub">Clears every active session</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--kv-text3);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
-      <div style="padding:0 1.5rem 1.25rem;display:flex;justify-content:flex-end;">
+      <div style="padding:0 1.4rem 1.1rem;display:flex;justify-content:flex-end;">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     Personalised Confirm Modal
-══════════════════════════════════════════════════════════ -->
+<!-- CONFIRM MODAL -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content vk-modal" style="border-radius:var(--radius);overflow:hidden;">
+    <div class="modal-content vk-modal" style="border-radius:var(--kv-r-lg);overflow:hidden;">
       <div class="confirm-modal-inner">
         <div class="confirm-modal-head">
           <div class="confirm-modal-icon-wrap" id="confirm-modal-icon"></div>
           <h5 class="confirm-modal-title" id="confirm-modal-title">Confirm</h5>
-          <button type="button" class="vk-modal-close" id="confirm-modal-cancel-x" data-bs-dismiss="modal">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
+          <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <div style="height:1px;background:var(--border);margin:0 1.5rem;"></div>
+        <div style="height:1px;background:var(--kv-border);margin:0 1.4rem;"></div>
         <div class="confirm-modal-body-lines" id="confirm-modal-lines"></div>
         <div class="confirm-modal-footer">
           <button class="btn-cancel" id="confirm-modal-cancel" data-bs-dismiss="modal">Cancel</button>
@@ -594,28 +954,26 @@
   </div>
 </div>
 
-
-<!-- ── Avatar Color Modal ── -->
+<!-- AVATAR COLOR MODAL — 7 swatches, no #2060e8 -->
 <div class="modal fade" id="avatarColorModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
-        <h5 class="vk-modal-title">Avatar Color</h5>
+        <h5 class="vk-modal-title">Avatar colour</h5>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="vk-modal-body">
-        <p style="color:var(--text2);font-size:0.875rem;margin-bottom:0.75rem;">Pick your avatar color</p>
+        <p style="color:var(--kv-text2);font-size:0.845rem;margin-bottom:0.75rem;">Pick your avatar colour</p>
         <div class="color-picker" id="avatar-color-picker">
-          <div class="color-swatch active" data-color="#c8f060" style="background:#c8f060;"></div>
-          <div class="color-swatch" data-color="#4f8ef7" style="background:#4f8ef7;"></div>
-          <div class="color-swatch" data-color="#f06090" style="background:#f06090;"></div>
-          <div class="color-swatch" data-color="#f0a060" style="background:#f0a060;"></div>
-          <div class="color-swatch" data-color="#60d4f0" style="background:#60d4f0;"></div>
-          <div class="color-swatch" data-color="#a060f0" style="background:#a060f0;"></div>
+          <div class="color-swatch active" data-color="#1a4fcc" style="background:#1a4fcc;"></div>
+          <div class="color-swatch" data-color="#0891b2" style="background:#0891b2;"></div>
+          <div class="color-swatch" data-color="#16a34a" style="background:#16a34a;"></div>
+          <div class="color-swatch" data-color="#d97706" style="background:#d97706;"></div>
+          <div class="color-swatch" data-color="#dc2626" style="background:#dc2626;"></div>
+          <div class="color-swatch" data-color="#7c3aed" style="background:#7c3aed;"></div>
+          <div class="color-swatch" data-color="#db2777" style="background:#db2777;"></div>
         </div>
       </div>
       <div class="vk-modal-footer">
@@ -626,101 +984,74 @@
   </div>
 </div>
 
-
-<!-- ── Delete Account Modal ── -->
+<!-- DELETE ACCOUNT MODAL -->
 <div class="modal fade" id="deleteAccountModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
-        <h5 class="vk-modal-title" style="color:var(--red);">Delete Account</h5>
+        <h5 class="vk-modal-title" style="color:var(--kv-red);">Delete account</h5>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="vk-modal-body">
-        <p class="delete-msg">
-          This action is <strong>irreversible</strong>. All your notebooks, entries, and account data will be permanently deleted.
-        </p>
-        <div class="field-group" style="margin-top:1rem;">
+        <p class="delete-msg">This action is <strong>irreversible</strong>. All your notebooks, entries, and account data will be permanently deleted.</p>
+        <div class="field-group" style="margin-top:0.5rem;">
           <label class="field-label">Confirm your password to proceed</label>
           <div class="password-wrap">
             <input type="password" id="delete-confirm-password" class="field-input" placeholder="Enter your master password"/>
             <button type="button" class="toggle-pw" onclick="togglePassword('delete-confirm-password')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-        <div id="delete-account-error" class="auth-alert d-none" style="margin-top:0.75rem;"></div>
+        <div id="delete-account-error" class="auth-alert d-none" style="margin-top:0.65rem;"></div>
       </div>
       <div class="vk-modal-footer">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn-danger" id="btn-confirm-delete-account">Delete Forever</button>
+        <button class="btn-danger" id="btn-confirm-delete-account">Delete forever</button>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     2FA — Setup Modal
-══════════════════════════════════════════════════════════ -->
+<!-- 2FA SETUP MODAL -->
 <div class="modal fade" id="setup2FAModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
         <div style="display:flex;align-items:center;gap:0.75rem;">
           <div class="two-fa-icon-wrap accent">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <polyline points="9 12 11 14 15 10"/>
-            </svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
           </div>
-          <h5 class="vk-modal-title">Set Up Two-Factor Auth</h5>
+          <h5 class="vk-modal-title">Set up two-factor auth</h5>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-
-      <div class="vk-modal-body" style="gap:1.25rem;">
+      <div class="vk-modal-body" style="gap:1.1rem;">
         <div class="setup-step">
           <div class="setup-step-num">1</div>
-          <p class="setup-step-text">
-            Install an authenticator app like <strong>Google Authenticator</strong>, <strong>Authy</strong>, or <strong>1Password</strong> on your phone.
-          </p>
+          <p class="setup-step-text">Install an authenticator app like <strong>Google Authenticator</strong>, <strong>Authy</strong>, or <strong>1Password</strong> on your phone.</p>
         </div>
         <div class="setup-step">
           <div class="setup-step-num">2</div>
           <div style="flex:1;">
-            <p class="setup-step-text" style="margin-bottom:0.75rem;">
-              Scan this QR code with your authenticator app:
-            </p>
+            <p class="setup-step-text" style="margin-bottom:0.65rem;">Scan this QR code:</p>
             <div class="totp-qr-wrap" id="totp-qr-container">
-              <div style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:0.8rem;">
-                Loading QR…
-              </div>
+              <div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:var(--kv-text3);font-size:0.8rem;">Loading QR…</div>
             </div>
           </div>
         </div>
         <div class="setup-step">
           <div class="setup-step-num">3</div>
           <div style="flex:1;">
-            <p class="setup-step-text" style="margin-bottom:0.5rem;">
-              Can't scan? Enter this key manually:
-            </p>
+            <p class="setup-step-text" style="margin-bottom:0.45rem;">Can't scan? Enter this key manually:</p>
             <div class="totp-secret-wrap">
               <span class="totp-secret-key" id="totp-secret-display">—</span>
               <button type="button" class="btn-copy-secret" id="btn-copy-totp-secret" title="Copy secret key">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                </svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               </button>
             </div>
           </div>
@@ -729,71 +1060,47 @@
         <div class="setup-step">
           <div class="setup-step-num">4</div>
           <div style="flex:1;">
-            <p class="setup-step-text" style="margin-bottom:0.5rem;">
-              Enter the <strong>6-digit code</strong> shown in your app to confirm:
-            </p>
-            <input type="text"
-                   id="totp-setup-code"
-                   class="field-input tfa-code-input"
-                   maxlength="7"
-                   inputmode="numeric"
-                   autocomplete="one-time-code"
-                   placeholder="000 000"/>
-            <div id="totp-setup-error" class="auth-alert d-none"
-                 style="margin-top:0.5rem;padding:0.5rem 0.75rem;font-size:0.8125rem;"></div>
+            <p class="setup-step-text" style="margin-bottom:0.45rem;">Enter the <strong>6-digit code</strong> from your app:</p>
+            <input type="text" id="totp-setup-code" class="field-input tfa-code-input" maxlength="7" inputmode="numeric" autocomplete="one-time-code" placeholder="000 000"/>
+            <div id="totp-setup-error" class="auth-alert d-none" style="margin-top:0.5rem;"></div>
           </div>
         </div>
       </div>
-
       <div class="vk-modal-footer">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
         <button class="btn-confirm" id="btn-2fa-verify">
-          <span class="btn-text">Verify &amp; Enable</span>
-          <span class="btn-loader" style="display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.2);border-top-color:#0a0c10;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+          <span class="btn-text">Verify &amp; enable</span>
+          <span class="btn-loader" style="display:none;"></span>
         </button>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     2FA — Backup Codes Modal
-══════════════════════════════════════════════════════════ -->
+<!-- BACKUP CODES MODAL -->
 <div class="modal fade" id="backupCodesModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
         <div style="display:flex;align-items:center;gap:0.75rem;">
           <div class="two-fa-icon-wrap accent">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
-          <h5 class="vk-modal-title" id="backup-codes-modal-title">Save Your Backup Codes</h5>
+          <h5 class="vk-modal-title" id="backup-codes-modal-title">Save your backup codes</h5>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="vk-modal-body" style="gap:1rem;">
+      <div class="vk-modal-body" style="gap:0.85rem;">
         <div class="backup-codes-warning">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span id="backup-codes-note">Save these codes somewhere safe.</span>
         </div>
         <div class="backup-codes-grid" id="backup-codes-list"></div>
         <button class="btn-cancel" id="btn-copy-backup" style="align-self:flex-start;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-          </svg>
-          Copy All Codes
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy all codes
         </button>
       </div>
       <div class="vk-modal-footer">
@@ -803,143 +1110,115 @@
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     2FA — Disable Modal
-══════════════════════════════════════════════════════════ -->
+<!-- DISABLE 2FA MODAL -->
 <div class="modal fade" id="disable2FAModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
         <div style="display:flex;align-items:center;gap:0.75rem;">
           <div class="two-fa-icon-wrap red">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <line x1="9" y1="9" x2="15" y2="15"/>
-              <line x1="15" y1="9" x2="9" y2="15"/>
-            </svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
           </div>
-          <h5 class="vk-modal-title">Disable Two-Factor Auth</h5>
+          <h5 class="vk-modal-title">Disable two-factor auth</h5>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="vk-modal-body" style="gap:1rem;">
-        <p style="color:var(--text2);font-size:0.875rem;line-height:1.6;">
-          Disabling 2FA will make your account less secure. You'll only need your password to sign in.
-        </p>
+      <div class="vk-modal-body" style="gap:0.85rem;">
+        <p style="color:var(--kv-text2);font-size:0.845rem;line-height:1.65;">Disabling 2FA will make your account less secure. You'll only need your password to sign in.</p>
         <div class="field-group">
-          <label class="field-label">Master Password</label>
+          <label class="field-label">Master password</label>
           <div class="password-wrap">
             <input type="password" id="disable-2fa-password" class="field-input" placeholder="Enter your master password"/>
             <button type="button" class="toggle-pw" onclick="togglePassword('disable-2fa-password')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-        <div id="disable-2fa-error" class="auth-alert d-none"
-             style="padding:0.5rem 0.75rem;font-size:0.8125rem;"></div>
+        <div id="disable-2fa-error" class="auth-alert d-none"></div>
       </div>
       <div class="vk-modal-footer">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn-danger" id="btn-disable-2fa-confirm">Yes, Disable 2FA</button>
+        <button class="btn-danger" id="btn-disable-2fa-confirm">Yes, disable 2FA</button>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     2FA — Regenerate Backup Codes Modal
-══════════════════════════════════════════════════════════ -->
+<!-- REGEN BACKUP MODAL -->
 <div class="modal fade" id="regenBackupModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content vk-modal">
       <div class="vk-modal-header">
         <div style="display:flex;align-items:center;gap:0.75rem;">
           <div class="two-fa-icon-wrap accent">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 4 23 10 17 10"/>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-            </svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
           </div>
-          <h5 class="vk-modal-title">Regenerate Backup Codes</h5>
+          <h5 class="vk-modal-title">Regenerate backup codes</h5>
         </div>
         <button type="button" class="vk-modal-close" data-bs-dismiss="modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="vk-modal-body" style="gap:1rem;">
-        <p style="color:var(--text2);font-size:0.875rem;line-height:1.6;">
-          This will <strong style="color:var(--text);">invalidate all existing backup codes</strong> and generate 8 new ones. Make sure to save the new codes after they're shown.
-        </p>
+      <div class="vk-modal-body" style="gap:0.85rem;">
+        <p style="color:var(--kv-text2);font-size:0.845rem;line-height:1.65;">This will <strong style="color:var(--kv-text);">invalidate all existing backup codes</strong> and generate 8 new ones.</p>
         <div class="field-group">
-          <label class="field-label">Master Password</label>
+          <label class="field-label">Master password</label>
           <div class="password-wrap">
             <input type="password" id="regen-backup-password" class="field-input" placeholder="Enter your master password"/>
             <button type="button" class="toggle-pw" onclick="togglePassword('regen-backup-password')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-        <div id="regen-backup-error" class="auth-alert d-none"
-             style="padding:0.5rem 0.75rem;font-size:0.8125rem;"></div>
+        <div id="regen-backup-error" class="auth-alert d-none"></div>
       </div>
       <div class="vk-modal-footer">
         <button class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn-confirm" id="btn-regen-backup-confirm">Yes, Regenerate</button>
+        <button class="btn-confirm" id="btn-regen-backup-confirm">Yes, regenerate</button>
       </div>
     </div>
   </div>
 </div>
 
-
 <div class="toast-container" id="toast-container"></div>
-
-<style>
-.logout-option-card {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.85rem 1rem;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.2s, background 0.2s, transform 0.15s;
-  font-family: var(--font);
-}
-.logout-option-card:hover { background: var(--bg2); border-color: var(--border2); transform: translateY(-1px); }
-.logout-option-card.logout-option-danger:hover { border-color: rgba(255,95,109,0.4); background: var(--red-dim); }
-.logout-option-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.logout-option-text { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; }
-.logout-option-title { font-size: 0.875rem; font-weight: 700; color: var(--text); }
-.logout-option-sub { font-size: 0.75rem; color: var(--text3); }
-.logout-option-card.logout-option-danger .logout-option-title { color: var(--red); }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
 
 <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 
 <script>
-// ── Global click: close dropdowns ────────────────────────────
+// ── Theme toggle ─────────────────────────────────────────────
+(function(){
+  const btn = document.getElementById('kv-theme-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    const current = document.documentElement.getAttribute('data-theme');
+    const next    = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('kv_theme', next);
+  });
+})();
+
+// ── Section accordion ────────────────────────────────────────
+function toggleSection(id) {
+  const section = document.getElementById('section-' + id);
+  const isOpen  = section.classList.contains('open');
+  document.querySelectorAll('.pf-section.open').forEach(s => { if (s !== section) s.classList.remove('open'); });
+  section.classList.toggle('open', !isOpen);
+}
+
+// ── Sidebar (mobile) ─────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen  = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('active', !isOpen);
+}
+
+// ── Close dropdowns on outside click ─────────────────────────
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('.nb-menu-wrap'))
-    document.querySelectorAll('.nb-dropdown').forEach(d => d.classList.remove('open'));
-  if (!e.target.closest('.acct-switcher-wrap'))
-    closeAccountSwitcher();
+  if (!e.target.closest('.acct-switcher-wrap')) closeAccountSwitcher();
 });
 
 function toggleAccountSwitcher(e) {
@@ -948,16 +1227,15 @@ function toggleAccountSwitcher(e) {
   if (!dd) return;
   dd.classList.toggle('open');
 }
-
 function closeAccountSwitcher() {
   const dd = document.getElementById('acct-switcher-dropdown');
   if (dd) dd.classList.remove('open');
 }
 
+// ── Logout modal ─────────────────────────────────────────────
 function openLogoutModal() {
   new bootstrap.Modal(document.getElementById('logoutModal')).show();
 }
-
 document.getElementById('logoutModal').addEventListener('show.bs.modal', async () => {
   try {
     const res  = await fetch('/api/accounts');
@@ -969,27 +1247,22 @@ document.getElementById('logoutModal').addEventListener('show.bs.modal', async (
       : 'You have one account signed in';
   } catch (_) {}
 });
-
 async function logoutCurrent() {
-  const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
-  if (modal) modal.hide();
+  bootstrap.Modal.getInstance(document.getElementById('logoutModal'))?.hide();
   const res  = await fetch('/api/logout-current', { method: 'POST' });
   const data = await res.json();
   window.location.href = data.new_active_user ? '/dashboard' : '/login';
 }
-
 async function logoutAll() {
-  const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
-  if (modal) modal.hide();
+  bootstrap.Modal.getInstance(document.getElementById('logoutModal'))?.hide();
   await fetch('/api/logout-all', { method: 'POST' });
   window.location.href = '/login';
 }
-
 document.getElementById('btn-confirm-logout').addEventListener('click', logoutCurrent);
 document.getElementById('btn-confirm-logout-all').addEventListener('click', logoutAll);
 
 // ── Copy TOTP secret ─────────────────────────────────────────
-document.getElementById('btn-copy-totp-secret').addEventListener('click', function () {
+document.getElementById('btn-copy-totp-secret').addEventListener('click', function() {
   const secret = document.getElementById('totp-secret-display').textContent;
   navigator.clipboard.writeText(secret).then(() => {
     this.title = 'Copied!';
@@ -997,11 +1270,54 @@ document.getElementById('btn-copy-totp-secret').addEventListener('click', functi
   });
 });
 
-// ── Auto-format TOTP setup code input ────────────────────────
-document.getElementById('totp-setup-code').addEventListener('input', function () {
+// ── TOTP code auto-format ─────────────────────────────────────
+document.getElementById('totp-setup-code').addEventListener('input', function() {
   let raw = this.value.replace(/\D/g, '').slice(0, 6);
   this.value = raw.length > 3 ? raw.slice(0, 3) + ' ' + raw.slice(3) : raw;
 });
+
+// ── 2FA status renderer ───────────────────────────────────────
+function render2FAStatus(enabled, backupCount, fetchFailed = false) {
+  const checkIcon  = document.getElementById('2fa-check-icon');
+  const badge      = document.getElementById('2fa-status-badge');
+  const sub        = document.getElementById('2fa-security-sub');
+  const enableBtn  = document.getElementById('btn-enable-2fa');
+  const disableBtn = document.getElementById('btn-disable-2fa');
+  const regenRow   = document.getElementById('2fa-regen-row');
+  const backupSub  = document.getElementById('2fa-backup-sub');
+  if (fetchFailed) {
+    sub.textContent   = 'Could not load status — try refreshing';
+    badge.textContent = '—';
+    badge.className   = 'sec-row-status off';
+    enableBtn?.classList.add('d-none');
+    disableBtn?.classList.add('d-none');
+    regenRow?.classList.add('d-none');
+    return;
+  }
+  if (enabled) {
+    checkIcon.className = 'sec-check';
+    checkIcon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+    badge.textContent   = 'Enabled';
+    badge.className     = 'sec-row-status on';
+    sub.textContent     = 'Authenticator app active — a code is required on every sign-in';
+    enableBtn?.classList.add('d-none');
+    disableBtn?.classList.remove('d-none');
+    regenRow?.classList.remove('d-none');
+    if (backupSub) {
+      backupSub.textContent = backupCount === 1 ? '1 backup code remaining — regenerate soon' : `${backupCount} backup codes remaining`;
+      backupSub.style.color = backupCount <= 2 ? 'var(--kv-amber)' : '';
+    }
+  } else {
+    checkIcon.className = 'sec-check warn';
+    checkIcon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+    badge.textContent   = 'Not set up';
+    badge.className     = 'sec-row-status off';
+    sub.textContent     = 'Add a second layer — require a code from your authenticator app on every sign-in';
+    enableBtn?.classList.remove('d-none');
+    disableBtn?.classList.add('d-none');
+    regenRow?.classList.add('d-none');
+  }
+}
 
 // ── Account switcher dropdown ─────────────────────────────────
 async function loadAccountsForProfile() {
@@ -1009,50 +1325,37 @@ async function loadAccountsForProfile() {
     const res  = await fetch('/api/accounts');
     const data = await res.json();
     renderProfileAccountSwitcher(data.accounts, data.active_user);
-  } catch (err) {
-    console.error('loadAccountsForProfile error:', err);
-  }
+  } catch (err) { console.error('loadAccountsForProfile:', err); }
 }
 
 function renderProfileAccountSwitcher(accounts, activeUserId) {
   const existing = document.getElementById('acct-switcher-dropdown');
   if (existing) existing.remove();
-
   const wrap = document.querySelector('.acct-switcher-wrap');
   if (!wrap) return;
 
   const dropdown = document.createElement('div');
-  dropdown.id        = 'acct-switcher-dropdown';
-  dropdown.className = 'nb-dropdown acct-dropdown';
-  dropdown.style.cssText = 'bottom:calc(100% + 6px);top:auto;right:0;left:0;min-width:220px;';
+  dropdown.id = 'acct-switcher-dropdown';
+  dropdown.style.cssText = 'position:absolute;bottom:calc(100% + 6px);top:auto;right:0;left:0;min-width:220px;z-index:600;background:var(--kv-surface);border:1px solid var(--kv-border2);border-radius:var(--kv-r-sm);box-shadow:var(--kv-shadow);padding:4px 0;opacity:0;visibility:hidden;transform:translateY(5px);pointer-events:none;transition:opacity 0.15s,transform 0.15s,visibility 0.15s;';
 
   accounts.forEach(acc => {
     const isActive = acc.user_id === activeUserId;
     const item     = document.createElement('button');
-    item.className = `nb-menu-item acct-item${isActive ? ' acct-item-active' : ''}`;
+    item.style.cssText = 'display:flex;align-items:center;gap:0.5rem;width:100%;background:none;border:none;color:var(--kv-text2);font-size:0.8125rem;padding:0.45rem 0.85rem;cursor:pointer;text-align:left;transition:background 0.12s;white-space:nowrap;';
     item.innerHTML = `
-      <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;
-        background:${isActive ? 'var(--accent)' : 'var(--bg3)'};
-        color:${isActive ? '#0a0c10' : 'var(--text2)'};
-        display:flex;align-items:center;justify-content:center;
-        font-size:0.7rem;font-weight:800;
-        border:1px solid ${isActive ? 'transparent' : 'var(--border2)'};">
-        ${acc.username[0].toUpperCase()}
+      <div style="width:25px;height:25px;border-radius:50%;flex-shrink:0;background:${isActive?'var(--kv-blue)':'var(--kv-surface2)'};color:${isActive?'white':'var(--kv-text2)'};display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;border:1px solid ${isActive?'transparent':'var(--kv-border2)'};">${acc.username[0].toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.8rem;font-weight:700;color:${isActive?'var(--kv-accent)':'var(--kv-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.username}</div>
+        <div style="font-size:0.68rem;color:var(--kv-text3);font-family:var(--kv-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.email}</div>
       </div>
-      <div style="flex:1;min-width:0;text-align:left;">
-        <div style="font-size:0.8125rem;font-weight:700;color:${isActive ? 'var(--accent)' : 'var(--text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.username}</div>
-        <div style="font-size:0.7rem;color:var(--text3);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.email}</div>
-      </div>
-      ${isActive ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+      ${isActive?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--kv-accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`:''}
     `;
+    item.onmouseenter = () => { item.style.background = 'var(--kv-nav-hover-bg)'; };
+    item.onmouseleave = () => { item.style.background = 'none'; };
     if (!isActive) {
       item.addEventListener('click', async () => {
         closeAccountSwitcher();
-        const res = await fetch('/api/switch-account', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ user_id: acc.user_id })
-        });
+        const res = await fetch('/api/switch-account', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:acc.user_id}) });
         if (res.ok) window.location.href = '/dashboard';
       });
     }
@@ -1060,42 +1363,44 @@ function renderProfileAccountSwitcher(accounts, activeUserId) {
   });
 
   const div1 = document.createElement('div');
-  div1.className = 'nb-menu-divider';
+  div1.style.cssText = 'height:1px;background:var(--kv-border);margin:4px 0;';
   dropdown.appendChild(div1);
 
   const addBtn = document.createElement('button');
-  addBtn.className = 'nb-menu-item';
-  addBtn.innerHTML = `
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    Add Account
-  `;
-  addBtn.addEventListener('click', () => {
-    closeAccountSwitcher();
-    window.location.href = '/login?add=1';
-  });
+  addBtn.style.cssText = 'display:flex;align-items:center;gap:0.5rem;width:100%;background:none;border:none;color:var(--kv-text2);font-size:0.8125rem;padding:0.45rem 0.85rem;cursor:pointer;';
+  addBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add account`;
+  addBtn.onmouseenter = () => { addBtn.style.background='var(--kv-nav-hover-bg)'; addBtn.style.color='var(--kv-text)'; };
+  addBtn.onmouseleave = () => { addBtn.style.background='none'; addBtn.style.color='var(--kv-text2)'; };
+  addBtn.addEventListener('click', () => { closeAccountSwitcher(); window.location.href='/login?add=1'; });
   dropdown.appendChild(addBtn);
 
   const div2 = document.createElement('div');
-  div2.className = 'nb-menu-divider';
+  div2.style.cssText = 'height:1px;background:var(--kv-border);margin:4px 0;';
   dropdown.appendChild(div2);
 
   const outBtn = document.createElement('button');
-  outBtn.className = 'nb-menu-item';
-  outBtn.innerHTML = `
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-    Sign Out Options
-  `;
-  outBtn.addEventListener('click', () => {
-    closeAccountSwitcher();
-    openLogoutModal();
-  });
+  outBtn.style.cssText = 'display:flex;align-items:center;gap:0.5rem;width:100%;background:none;border:none;color:var(--kv-text2);font-size:0.8125rem;padding:0.45rem 0.85rem;cursor:pointer;';
+  outBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign out options`;
+  outBtn.onmouseenter = () => { outBtn.style.background='var(--kv-nav-hover-bg)'; outBtn.style.color='var(--kv-text)'; };
+  outBtn.onmouseleave = () => { outBtn.style.background='none'; outBtn.style.color='var(--kv-text2)'; };
+  outBtn.addEventListener('click', () => { closeAccountSwitcher(); openLogoutModal(); });
   dropdown.appendChild(outBtn);
+
+  window.toggleAccountSwitcher = function(e) {
+    e.stopPropagation();
+    const isOpen = dropdown.style.opacity === '1';
+    if (isOpen) {
+      dropdown.style.opacity='0'; dropdown.style.visibility='hidden';
+      dropdown.style.transform='translateY(5px)'; dropdown.style.pointerEvents='none';
+    } else {
+      dropdown.style.opacity='1'; dropdown.style.visibility='visible';
+      dropdown.style.transform='translateY(0)'; dropdown.style.pointerEvents='auto';
+    }
+  };
+  window.closeAccountSwitcher = function() {
+    dropdown.style.opacity='0'; dropdown.style.visibility='hidden';
+    dropdown.style.transform='translateY(5px)'; dropdown.style.pointerEvents='none';
+  };
 
   wrap.appendChild(dropdown);
 }

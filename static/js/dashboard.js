@@ -1,4 +1,4 @@
-// dashboard.js — VaultKey
+// dashboard.js — KeyVora
 
 let notebooks = [];
 let currentNotebookId = null;
@@ -285,7 +285,7 @@ async function _getStrengthPrefEnabled() {
 function setupEntryStrengthMeter() {
     const input  = document.getElementById('entry-password');
     const wrap   = document.getElementById('entry-strength-wrap');
-    const colors = ['', '#ff5f6d', '#f0a060', '#4f8ef7', '#c8f060'];
+    const colors = ['', '#dc2626', '#d97706', '#1a4fcc', '#16a34a'];
     const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
 
     input.addEventListener('input', async () => {
@@ -716,7 +716,7 @@ function renderNotebooks() {
                         isDanger: false,
                         icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                 <path d="M5 15H4a2 2 0 0 0-2-2V4a2 2 0 0 0 2-2h9a2 2 0 0 0 2 2v1"/>
                                </svg>`
                     });
 
