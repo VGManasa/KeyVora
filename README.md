@@ -1,160 +1,272 @@
-# VaultKey
+# KeyVora — Secure Password Manager
 
-VaultKey is a Flask-based secure password manager built with a focus on cybersecurity-first design. It provides encrypted credential storage, multi-factor authentication, and secure session handling through a web interface.
+> Secure password manager using Fernet encryption, PBKDF2 key derivation, Google OAuth, and TOTP 2FA.
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Live Demo](#live-demo)
 - [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Security Features](#security-features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Security Architecture](#security-architecture)
 - [Authentication Flows](#authentication-flows)
+- [Rate Limiting](#rate-limiting)
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
+- [Database Setup](#database-setup)
 - [Running the Application](#running-the-application)
 - [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
 ---
 
 ## Overview
 
-VaultKey allows users to securely store, organize, and retrieve passwords. Credentials are encrypted at rest using a vault-key architecture where each user's data is protected by a unique vault key derived from their master password. The application is designed to run both locally and on cloud platforms such as Render or Railway.
+KeyVora is a cybersecurity-first password manager built with Flask. Credentials are encrypted at rest using a vault-key architecture — every password is wrapped by a unique Fernet key that is itself derived from your master password via PBKDF2-HMAC-SHA256 with 390,000 iterations. The server cannot read stored credentials at rest; the database holds only opaque ciphertext.
+
+The project was built as a full-stack learning exercise that covers real-world web security: symmetric encryption, key stretching, server-side vault key management, OAuth 2.0, TOTP 2FA, rate limiting, and secure session handling.
+
+---
+
+## Live Demo
+
+> _Coming soon — deployment in progress._
 
 ---
 
 ## Features
 
-**Authentication**
-- Username/password registration and login
+### Authentication
+- Email/password registration and login
 - Google OAuth 2.0 login via Authlib
-- Time-based One-Time Password (TOTP) two-factor authentication using PyOTP
-- TOTP QR code generation for authenticator app setup
-- Backup codes for 2FA recovery
-- Email OTP-based password reset via Flask-Mail
+- TOTP two-factor authentication (Google Authenticator, Authy, etc.)
+- QR code generation for authenticator app setup
+- 8 single-use backup codes generated at 2FA enrolment (bcrypt-hashed)
+- Email OTP-based password reset (6-digit code, expiry-controlled)
 
-**Vault and Password Management**
-- Notebook-based organization of password entries (title, username, encrypted password, URL, notes)
-- Vault lock and unlock mechanism with a configurable session timeout (default: 15 minutes)
-- Vault key stored in session memory; cleared on lock or session expiry
-- Multi-account session support (switch between logged-in accounts without re-authentication)
+### Vault & Password Management
+- Notebook-based organisation — group credentials by context (Work, Personal, Finance, etc.)
+- Each entry stores: title, username, encrypted password, URL, and notes
+- Vault lock/unlock mechanism with a configurable auto-lock timeout (default: 15 minutes)
+- Live countdown timer on the dashboard showing time until auto-lock
+- Vault key held in server-side session memory; wiped on lock or session expiry
+- Instant search across all notebooks by title, username, or URL
 
-**Security**
-- Passwords encrypted using Fernet symmetric encryption (AES-128-CBC)
-- Vault key derived from master password using PBKDF2-HMAC-SHA256 (390,000 iterations)
-- User passwords hashed with bcrypt via Flask-Bcrypt
-- Server-side vault key escrow for Google OAuth users who set a master password later
-- Rate limiting on authentication endpoints via Flask-Limiter
-- Security headers on all responses: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Content-Security-Policy`
-- Secure, HttpOnly, SameSite session cookies
+### Multi-Account Sessions
+- Sign in to multiple KeyVora accounts simultaneously
+- Switch between accounts with one click
+- Each account maintains its own independent vault key and lock state
+
+### Data Portability
+- Full vault export as a JSON file at any time
+- No subscription required to export
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend Framework | Flask 3.x |
-| ORM | Flask-SQLAlchemy, Flask-Migrate (Alembic) |
-| Database | SQLite (development), PostgreSQL (production) |
-| Encryption | cryptography (Fernet, PBKDF2HMAC) |
-| Password Hashing | Flask-Bcrypt |
-| Authentication | Flask-Login, Authlib (Google OAuth) |
-| 2FA | PyOTP, qrcode |
-| Email | Flask-Mail (SMTP/Gmail) |
-| Rate Limiting | Flask-Limiter |
-| WSGI Server | Gunicorn |
-| Frontend | HTML, CSS, JavaScript (Jinja2 templates) |
+| Layer             | Technology                                         |
+|-------------------|----------------------------------------------------|
+| Backend Framework | Flask 3.x                                          |
+| ORM               | Flask-SQLAlchemy, Flask-Migrate (Alembic)          |
+| Database          | SQLite (development), PostgreSQL (production)      |
+| Encryption        | `cryptography` — Fernet (AES-128-CBC + HMAC-SHA256), PBKDF2HMAC |
+| Password Hashing  | Flask-Bcrypt                                       |
+| Auth              | Flask-Login, Authlib (Google OAuth 2.0)            |
+| 2FA               | PyOTP, `qrcode`                                    |
+| Email             | Flask-Mail (SMTP / Gmail App Password)             |
+| Rate Limiting     | Flask-Limiter                                      |
+| WSGI Server       | Gunicorn                                           |
+| Frontend          | HTML, CSS, JavaScript (Jinja2 templates)           |
+| Fonts             | Sora, Inter, DM Mono (Google Fonts)                |
 
 ---
 
 ## Project Structure
 
 ```
-Vaultkey/
-├── app.py                  # Main application: routes, models, auth logic, encryption
-├── requirements.txt        # Python dependencies
-├── Procfile                # Gunicorn process definition for deployment
+KeyVora/
+├── app.py                      # Main application — routes, models, auth, encryption
+├── requirements.txt            # Python dependencies
+├── Procfile                    # Gunicorn entry point for cloud deployment
+├── .env                        # Environment variables (never commit)
 ├── .gitignore
-├── migrations/             # Alembic database migration scripts
-├── static/                 # CSS, JavaScript, and static assets
-└── templates/              # Jinja2 HTML templates
-    ├── index.html
-    ├── login.html
-    ├── register.html
-    ├── dashboard.html
-    ├── profile.html
-    ├── 2fa.html
-    └── forgot_password.html
+├── keyvora.db                  # SQLite database (development only)
+│
+├── migrations/                 # Alembic database migration scripts
+│   ├── env.py
+│   ├── script.py.mako
+│   ├── alembic.ini
+│   └── versions/
+│       ├── 506eca5ca91d_initial_clean.py
+│       └── 31999aef81b3_add_2fa_field.py
+│
+├── static/
+│   ├── css/
+│   │   ├── 2fa.css             # 2FA page styles
+│   │   ├── main.css            # Global styles, design tokens
+│   │   └── profile_styles.css  # Profile / settings page styles
+│   └── js/
+│       ├── 2fa.js              # 2FA page interactions
+│       ├── dashboard.js        # Vault UI — notebooks, search, entries
+│       ├── main.js             # Shared utilities, vault timer
+│       └── profile.js          # Profile page interactions
+│
+└── templates/
+    ├── base.html               # Shared base layout (nav, session, headers)
+    ├── index.html              # Landing / marketing page
+    ├── login.html              # Login form (password + Google OAuth)
+    ├── register.html           # Registration form
+    ├── dashboard.html          # Main vault UI (notebooks + entries)
+    ├── profile.html            # Account settings, 2FA management
+    ├── 2fa.html                # TOTP verification step
+    └── forgot_password.html    # OTP-based password reset flow
 ```
 
 ---
 
 ## Security Architecture
 
-**Vault Key Encryption Model**
+> **Threat model note:** The vault key is temporarily held in the server-side session while the vault is unlocked. The server cannot read credentials at rest, but does hold the decryption key in memory during an active unlock window. This is a **server-assisted encryption model**, not a fully client-side zero-knowledge architecture.
 
-Each user has a unique vault key (Fernet key) generated at registration. This vault key is never stored in plaintext. Instead:
+### Vault Key Encryption Model
 
-1. A Key Encryption Key (KEK) is derived from the user's master password and a random salt using PBKDF2-HMAC-SHA256 with 390,000 iterations.
-2. The vault key is encrypted with the KEK and stored in the database (`encrypted_vault_key`).
-3. On login, the vault key is decrypted using the provided master password and held in the server-side session for the duration of the vault unlock window.
-4. After the lock timeout expires or the user manually locks the vault, the vault key is removed from the session and all password operations require re-entry of the master password.
+Each user gets a unique Fernet key (the **vault key**) generated at registration. It is never stored in plaintext. Fernet uses AES-128-CBC with HMAC-SHA256 for authenticated encryption.
 
-**Escrow Vault Key**
+```
+Master Password + Random Salt
+        │
+        ▼  PBKDF2-HMAC-SHA256 (390,000 iterations)
+  Key Encryption Key (KEK)
+        │
+        ▼  Fernet.encrypt(vault_key)
+  encrypted_vault_key  ← stored in database
+```
 
-For accounts that use Google OAuth and later set a master password, a server-side escrow copy of the vault key is maintained. This escrow is encrypted using a key derived from the application's `SECRET_KEY` and the user's salt, enabling recovery flows without exposing the vault key in plaintext.
+On login:
+1. User provides their master password.
+2. The KEK is re-derived from the master password and the stored salt.
+3. The vault key is decrypted and held **in the server-side session** for the duration of the unlock window. The server can decrypt entries while the vault is unlocked.
+4. After the timeout, the vault key is wiped from session memory; all vault operations require re-entry of the master password.
 
-**Password Entry Encryption**
+### Password Entry Encryption
 
-Each password entry's value is encrypted using the user's vault key (Fernet). Decryption is only possible when the vault is unlocked and the vault key is present in the session.
+Every password field is individually encrypted with the vault key:
+
+```
+Plaintext Password  →  Fernet(vault_key).encrypt()  →  Ciphertext stored in DB
+```
+
+Decryption is only possible when the vault is unlocked and the vault key is present in the session.
+
+### Google OAuth Escrow
+
+Google OAuth users do not have a master password by default. When they later set one via their profile, a server-side **escrow copy** of their vault key is maintained. The escrow key is encrypted using a KEK derived from the application's `SECRET_KEY` and the user's unique salt — enabling the OTP reset flow to re-wrap the vault key under the new master password without exposing it.
+
+### Security Headers
+
+Every response includes:
+
+```
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: default-src 'self'; ...
+```
+
+Session cookies are set with `HttpOnly`, `SameSite=Lax`, and `Secure` (production only).
+
+### Bcrypt Login Credential Hashing
+
+The login password (separate from the master password) is hashed with Flask-Bcrypt. Even in the event of a full database compromise, login credentials remain protected against high-speed cracking hardware.
 
 ---
 
 ## Authentication Flows
 
-**Standard Login**
-1. User submits username/email and master password.
-2. bcrypt verifies the password hash.
-3. PBKDF2 derives the KEK; the vault key is decrypted and stored in the session.
-4. If TOTP is enabled, the vault key is held in a temporary session key until 2FA is verified.
+### Standard Login
 
-**Google OAuth Login**
-1. User is redirected to Google's authorization endpoint.
-2. On return, the user's Google ID and email are matched against existing accounts or a new account is created.
-3. If TOTP is enabled on the account, the 2FA challenge is presented before session creation.
-4. Google users do not have a vault key until they set a master password via their profile.
+```
+User → Email + Master Password
+     → bcrypt verifies login hash
+     → PBKDF2 derives KEK
+     → vault key decrypted → stored in session
+     → (if TOTP enabled) → temp session key held → TOTP verified → session finalised
+     → Dashboard
+```
 
-**Two-Factor Authentication**
-- TOTP codes are verified against a stored base32 secret using a valid window of ±1 step.
-- Backup codes are single-use, stored as bcrypt hashes, and consumed on successful verification.
+### Google OAuth Login
 
-**Password Reset**
-- A 6-character OTP is generated and sent to the user's registered email via SMTP.
-- The OTP is stored in the database with an expiry timestamp and invalidated after use.
+```
+User → "Sign in with Google"
+     → Google authorization endpoint
+     → Callback: Google ID + email matched or new account created
+     → (if TOTP enabled) → 2FA challenge presented
+     → Session created (no vault key until master password is set)
+     → Dashboard
+```
+
+### TOTP Two-Factor Authentication
+
+- Codes verified against the stored base32 secret with a ±1 step tolerance window.
+- Backup codes are single-use, stored as bcrypt hashes, consumed and permanently deleted on use (prevents replay attacks).
+
+### Password Reset (OTP Flow)
+
+```
+User → Forgot Password → Email submitted
+     → 6-digit OTP generated and emailed (expiry: 10 minutes)
+     → User enters OTP + new master password
+     → Server re-derives KEK → re-wraps vault key under new master password
+     → Old OTP invalidated
+     → User redirected to login
+```
+
+---
+
+## Rate Limiting
+
+Flask-Limiter enforces the following limits per IP address:
+
+| Endpoint              | Limit                  |
+|-----------------------|------------------------|
+| Login                 | 20 requests / minute   |
+| Registration          | 10 requests / hour     |
+| Password reset        | 5 requests / hour      |
+| Vault unlock          | 10 requests / minute   |
+
+Exceeding any limit returns an HTTP 429 with a clear retry message.
 
 ---
 
 ## Installation
 
-**Prerequisites**
+### Prerequisites
+
 - Python 3.10 or higher
 - pip
+- A Gmail account with an [App Password](https://support.google.com/accounts/answer/185833) enabled (for email OTP)
+- A Google Cloud project with OAuth 2.0 credentials configured (for Google login)
 
-**Steps**
+### Steps
 
 ```bash
-# Clone the repository
-git clone https://github.com/VGManasa/Vaultkey.git
-cd Vaultkey
+# 1. Clone the repository
+git clone https://github.com/VGManasa/KeyVora.git
+cd KeyVora
 
-# Create and activate a virtual environment
+# 2. Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate        # On Windows: venv\Scripts\activate
+source venv/bin/activate          # Windows: venv\Scripts\activate
 
-# Install dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -162,30 +274,64 @@ pip install -r requirements.txt
 
 ## Environment Variables
 
-Create a `.env` file in the project root with the following variables:
+Create a `.env` file in the project root:
 
 ```env
-# Required
-SECRET_KEY=your_secret_key_here
+# ── Core ──────────────────────────────────────────
+SECRET_KEY=your_very_long_random_secret_key_here
 
-# Database (optional; defaults to SQLite locally)
-DATABASE_URL=sqlite:///vaultkey.db
+# ── Database ──────────────────────────────────────
+# Leave as SQLite for local development
+DATABASE_URL=sqlite:///keyvora.db
+# PostgreSQL for production:
+# DATABASE_URL=postgresql://user:password@host:5432/dbname
 
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
+# ── Google OAuth 2.0 ──────────────────────────────
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-# Email (SMTP)
+# ── Email (Flask-Mail / Gmail SMTP) ───────────────
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
+MAIL_USE_TLS=true
 MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
+MAIL_PASSWORD=your_16_character_app_password
 
-# Vault lock timeout in seconds (default: 900)
+# ── Vault ─────────────────────────────────────────
+# Auto-lock timeout in seconds (default: 900 = 15 minutes)
 VAULT_LOCK_TIMEOUT=900
 
-# Set to 'production' when deploying
-FLASK_ENV=development
+# ── Flask ─────────────────────────────────────────
+FLASK_ENV=development      # Set to 'production' when deploying
+```
+
+> **Never commit your `.env` file.** It is already listed in `.gitignore`.
+
+### Google OAuth Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials.
+2. Create an **OAuth 2.0 Client ID** (Web application type).
+3. Add `http://127.0.0.1:5000/auth/google/callback` to **Authorised Redirect URIs** (development).
+4. Add your production callback URL when deploying.
+5. Copy the Client ID and Client Secret into your `.env`.
+
+---
+
+## Database Setup
+
+```bash
+# Initialise migration environment (first time only, already committed)
+flask db init
+
+# Apply all migrations to create the schema
+flask db upgrade
+```
+
+If you modify models in `app.py`, generate and apply a new migration:
+
+```bash
+flask db migrate -m "describe your change here"
+flask db upgrade
 ```
 
 ---
@@ -193,51 +339,73 @@ FLASK_ENV=development
 ## Running the Application
 
 ```bash
-# Initialise the database
-flask db upgrade
+# Activate your virtual environment first
+source venv/bin/activate
 
-# Start the development server
+# Run the development server
 flask run
 ```
 
-The application will be available at `http://127.0.0.1:5000`.
+The app will be available at `http://127.0.0.1:5000`.
+
+To run on a different port:
+
+```bash
+flask run --port 8000
+```
 
 ---
 
 ## Deployment
 
-VaultKey includes a `Procfile` for deployment on platforms such as Render or Railway.
+KeyVora includes a `Procfile` for one-click deployment on Render or Railway.
 
 ```
 web: gunicorn app:app
 ```
 
-**Production checklist:**
-- Set `FLASK_ENV=production` in the platform's environment variables.
-- Provide a `DATABASE_URL` pointing to a PostgreSQL instance. The application handles the `postgres://` to `postgresql://` scheme conversion automatically.
-- Set all required environment variables listed above.
-- The application uses `ProxyFix` middleware to correctly handle HTTPS and generate absolute URLs behind a reverse proxy.
-- Session cookies are automatically set to `Secure` when `FLASK_ENV=production`.
+### Render / Railway
 
+1. Push your repository to GitHub.
+2. Create a new Web Service on [Render](https://render.com) or [Railway](https://railway.app) and connect the repo.
+3. Set all environment variables from the `.env` section above in the platform's dashboard.
+4. Set `FLASK_ENV=production`.
+5. Provide a `DATABASE_URL` pointing to a PostgreSQL instance (both platforms offer managed Postgres add-ons).
+
+### Production Notes
+
+- The application automatically converts `postgres://` to `postgresql://` (required by SQLAlchemy 1.4+).
+- `ProxyFix` middleware is included to correctly handle HTTPS headers and generate absolute callback URLs behind a reverse proxy.
+- Session cookies are automatically promoted to `Secure` when `FLASK_ENV=production`.
+- Run `flask db upgrade` once after initial deployment to initialise the production schema.
+
+---
 
 ## Contributing
 
-Contributions are welcome.
+Contributions, bug reports, and feature suggestions are welcome.
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "feat: describe your change"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request against `main`
+
+Please keep PRs focused and include a clear description of what was changed and why.
 
 ---
 
 ## License
 
-This project is for educational and learning purposes.
+This project is built for educational and learning purposes. Feel free to study, fork, and adapt it — attribution appreciated.
 
 ---
 
 ## Author
 
-Developed by Manasa V G
+**Manasa V G**  
+[GitHub @VGManasa](https://github.com/VGManasa)
+
+---
+
+_Built with Flask, secured with Fernet encryption and PBKDF2 key derivation, and designed around a single principle: your passwords belong to you._
